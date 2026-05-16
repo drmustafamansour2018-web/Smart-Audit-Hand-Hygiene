@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sohag University - Hand Hygiene Audit</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght=400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <style>
@@ -82,7 +82,6 @@
             padding: 20px;
         }
 
-        /* تعديلات الموبايل الذكية لحل مشكلة الشاشة الجانبية */
         @media (max-width: 768px) {
             body {
                 flex-direction: column;
@@ -295,7 +294,7 @@
     <div class="sidebar">
         <h2 style="color: var(--accent); font-size: 1.1rem; font-weight: 800; text-align: center; line-height: 1.4;">Smart Audit<br><span style="color:var(--text-light); font-size: 0.9rem;">Hand Hygiene</span></h2>
         <div class="nav-item active" onclick="switchView('dashboard', this)">📊 الإحصائيات</div>
-        <div class="nav-item" onclick="switchView('audit', this)">📝 تسجيل ملاحظة</div>
+        <div class="nav-item" onclick="switchView('audit', this)">📝 تسجيل مشاهدة</div>
         <div style="margin-top: auto; padding-top: 10px;">
             <p style="font-size: 0.75rem; color: var(--text-light); text-align: center;">Hand Hygiene Monitoring System<br>Sohag University Hospitals</p>
         </div>
@@ -407,7 +406,7 @@
 
                 <div id="formFieldsArea">
                     <label style="color:var(--accent);">اللحظة التي تم مشاهدتها (5 Moments)</label>
-                    <select id="momentInput">
+                    <select id="momentInput" onchange="draft.moment = this.value">
                         <option value="">اختر اللحظة...</option>
                         <option value="1">1- قبل ملامسة المريض</option>
                         <option value="2">2- قبل الإجراءات النظيفة / المعقمة</option>
@@ -420,7 +419,7 @@
                     <input type="text" id="staffNameInput" placeholder="اكتب الاسم إذا رغبت..." style="width: 100%; padding: 12px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--card); color: var(--text); margin-bottom: 20px; font-family: 'Cairo';">
 
                     <label style="color:var(--accent); margin-top: 15px;">الفئة (Staff Class)</label>
-                    <div class="grid-options">
+                    <div class="grid-options" id="staffGroup">
                         <div class="option-btn" onclick="selectItem('staff', 'طبيب', this)">طبيب</div>
                         <div class="option-btn" onclick="selectItem('staff', 'تمريض', this)">تمريض</div>
                         <div class="option-btn" onclick="selectItem('staff', 'فني', this)">فني</div>
@@ -428,7 +427,7 @@
                     </div>
 
                     <label style="color:var(--accent);">النتيجة (Compliance)</label>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;" id="compGroup">
                         <div class="option-btn btn-comp-success" style="border-color: var(--success); color: var(--success);" onclick="selectItem('comp', 1, this)">ملتزم (Compliant)</div>
                         <div class="option-btn btn-comp-danger" style="border-color: var(--danger); color: var(--danger);" onclick="selectItem('comp', 0, this)">غير ملتزم (Non-Compliant)</div>
                     </div>
@@ -500,10 +499,10 @@
             if (isCurrentMonth) nextBtn.classList.add('hidden'); else nextBtn.classList.remove('hidden');
 
             const staticMonthlyData = {
-                1: { total: 580, rate: 55.2 }, // فبراير
-                2: { total: 610, rate: 59.0 }, // مارس
-                3: { total: 596, rate: 65.4 }, // أبريل
-                4: { total: 250, rate: 60.8 }  // مايو
+                1: { total: 580, rate: 55.2 }, 
+                2: { total: 610, rate: 59.0 }, 
+                3: { total: 596, rate: 65.4 }, 
+                4: { total: 250, rate: 60.8 }  
             };
 
             let total = 0;
@@ -550,7 +549,6 @@
 
             if (showDefaults) {
                 document.getElementById('worstStaff').innerText = "التمريض";
-                
                 if (currentMonthIdx === 1) {       
                     document.getElementById('worstDept').innerText = "استقبل الطوارئ";
                 } else if (currentMonthIdx === 2) { 
@@ -627,7 +625,6 @@
                     3: [60, 72, 59, 68, 70, 63, 65, 71, 66, 64, 61, 74, 67, 63, 62], 
                     4: [55, 68, 56, 63, 65, 58, 61, 66, 62, 60, 54, 69, 62, 59, 57]  
                 };
-                
                 deptRates = baseRates[currentMonthIdx] || [60, 65, 55, 70, 58, 62, 64, 50, 66, 59, 53, 67, 61, 57, 55];
             }
 
@@ -673,64 +670,66 @@
                     staffCounts = [Math.round(totalRecords * 0.80), Math.round(totalRecords * 0.10), Math.round(totalRecords * 0.07), Math.round(totalRecords * 0.03)];
                 }
             } else {
-                staffCounts = staffCats.map(c => filteredData.filter(d => d.staff === c).length);
+                staffCats.forEach((cat, idx) => {
+                    staffCounts[idx] = filteredData.filter(item => item.staff === cat).length;
+                });
             }
-
-            const hasData = staffCounts.reduce((a, b) => a + b, 0) > 0;
 
             c2 = new Chart(document.getElementById('staffChart'), {
                 type: 'doughnut',
-                data: { 
-                    labels: ['تمريض', 'دكاترة', 'عمال', 'فنيين'], 
-                    datasets: [{ 
-                        data: hasData ? staffCounts : [1, 0, 0, 0], 
-                        backgroundColor: ['#2563eb', '#10b981', '#f59e0b', '#ef4444'] 
-                    }] 
+                data: {
+                    labels: staffCats,
+                    datasets: [{
+                        data: staffCounts,
+                        backgroundColor: ['#2563eb', '#10b981', '#f59e0b', '#ef4444']
+                    }]
                 },
-                options: { 
-                    cutout: '65%',
+                options: {
+                    responsive: true,
                     plugins: {
-                        legend: { labels: { color: chartTextColor, font: { family: 'Cairo' } } },
+                        legend: { position: 'bottom', labels: { color: chartTextColor, font: { family: 'Cairo' } } },
                         datalabels: {
-                            formatter: (value) => {
-                                if (!hasData) return '';
-                                let total = staffCounts.reduce((a, b) => a + b, 0);
-                                let percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                                return percentage > 0 ? percentage + '%' : '';
+                            formatter: (value, ctx) => {
+                                let sum = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                                return sum > 0 ? Math.round((value / sum) * 100) + "%" : "0%";
                             },
-                            color: '#fff', font: { weight: 'bold', family: 'Cairo', size: 12 }, textAlign: 'center'
+                            color: '#fff', font: { weight: 'bold', family: 'Cairo', size: 12 }
                         }
                     }
                 }
             });
         }
 
-        function loadSub(cat, el) {
+        // --- المنطق الخاص بـ الـ Forms واختيار الأقسام ---
+        function loadSub(cat, btn) {
             document.querySelectorAll('#mainCatGrid .option-btn').forEach(b => b.classList.remove('active'));
-            if(el) el.classList.add('active');
-
-            const container = document.getElementById('subContainer');
-            container.innerHTML = '';
+            btn.classList.add('active');
+            
+            const subContainer = document.getElementById('subContainer');
+            const subCategoryArea = document.getElementById('subCategoryArea');
+            const clinicInputArea = document.getElementById('clinicInputArea');
+            
+            subContainer.innerHTML = '';
             document.getElementById('deptSearch').value = '';
-
-            if(cat === 'clinic') {
-                document.getElementById('subCategoryArea').style.display = 'none';
-                document.getElementById('clinicInputArea').style.display = 'flex';
+            
+            if (cat === 'clinic') {
+                subCategoryArea.style.display = 'none';
+                clinicInputArea.style.display = 'flex';
                 draft.dept = '';
             } else {
-                document.getElementById('clinicInputArea').style.display = 'none';
-                document.getElementById('subCategoryArea').style.display = 'block';
+                clinicInputArea.style.display = 'none';
+                subCategoryArea.style.display = 'block';
                 
                 depts[cat].forEach(d => {
-                    const btn = document.createElement('div');
-                    btn.className = 'option-btn';
-                    btn.innerText = d;
-                    btn.onclick = () => {
+                    const dBtn = document.createElement('div');
+                    dBtn.className = 'option-btn';
+                    dBtn.innerText = d;
+                    dBtn.onclick = function() {
                         document.querySelectorAll('#subContainer .option-btn').forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
+                        dBtn.classList.add('active');
                         draft.dept = d;
                     };
-                    container.appendChild(btn);
+                    subContainer.appendChild(dBtn);
                 });
             }
         }
@@ -738,8 +737,11 @@
         function filterDepts() {
             const query = document.getElementById('deptSearch').value.toLowerCase();
             document.querySelectorAll('#subContainer .option-btn').forEach(btn => {
-                if(btn.innerText.toLowerCase().includes(query)) btn.style.display = 'block';
-                else btn.style.display = 'none';
+                if (btn.innerText.toLowerCase().includes(query)) {
+                    btn.style.display = 'block';
+                } else {
+                    btn.style.display = 'none';
+                }
             });
         }
 
@@ -747,60 +749,59 @@
             const val = document.getElementById('customClinicName').value.trim();
             if(val) {
                 draft.dept = val;
-                showToast("تم اعتماد العيادة: " + val);
+                alert('تم تحديد العيادة: ' + val);
+            } else {
+                alert('يرجى كتابة اسم العيادة أولاً');
             }
         }
 
-        function selectItem(field, val, el) {
-            el.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
-            el.classList.add('active');
-            draft[field] = val;
+        function selectItem(type, value, btn) {
+            const parentId = type === 'staff' ? 'staffGroup' : 'compGroup';
+            document.querySelectorAll(`#${parentId} .option-btn`).forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            draft[type] = value;
         }
 
         function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.innerText = msg;
-            t.classList.add('show');
-            
-            // إخفاء الـ Toast تماماً بعد 3 ثوانٍ وتصفير الحالة
-            setTimeout(() => {
-                t.classList.remove('show');
-            }, 3000);
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
         }
 
         function submitData() {
             draft.hospital = document.getElementById('hospitalInput').value;
             draft.auditor = document.getElementById('auditorInput').value;
-            draft.moment = document.getElementById('momentInput').value;
-            draft.staffName = document.getElementById('staffNameInput').value;
+            draft.staffName = document.getElementById('staffNameInput').value.trim();
             draft.date = document.getElementById('observationDate').value;
 
-            if(!draft.hospital || !draft.auditor || !draft.dept || !draft.moment || !draft.staff || draft.comp === null || !draft.date) {
-                alert("برجاء إدخال كافة البيانات المطلوبة قبل الحفظ");
+            if (!draft.hospital || !draft.auditor || !draft.dept || !draft.moment || !draft.staff || draft.comp === null || !draft.date) {
+                alert('برجاء استكمال كافة البيانات الأساسية المطلوبة قبل الحفظ.');
                 return;
             }
 
-            // إضافة البيانات للمصفوفة والـ LocalStorage بشكل آمن وصحيح أولاً
             db.push({...draft});
             localStorage.setItem('ic_pro_db', JSON.stringify(db));
             
-            // إظهار التنبيه التلقائي بالاختفاء
-            showToast("تم تسجيل المشاهدة بنجاح");
-            
-            // تحديث الإحصائيات في نفس الوقت
-            refreshStats();
-            
-            // تصفير واجهة النموذج تماماً وإعدادها للمشاهدة التالية
+            showToast('تم التسجيل بنجاح');
+
+            // إعادة ضبط النموذج بطريقة آمنة لا تدمر الـ HTML
+            document.getElementById('hospitalInput').value = '';
+            document.getElementById('auditorInput').value = '';
             document.getElementById('momentInput').value = '';
             document.getElementById('staffNameInput').value = '';
-            document.querySelectorAll('#view-audit .option-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('customClinicName').value = '';
+            document.getElementById('observationDate').valueAsDate = new Date();
             
-            // تفريغ المسودة بأمان بعد التأكد من الحفظ
-            draft = { dept: '', staff: '', comp: null, moment: '', hospital: draft.hospital, auditor: draft.auditor, staffName: '', date: draft.date };
-            
+            document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('subCategoryArea').style.display = 'none';
             document.getElementById('clinicInputArea').style.display = 'none';
-            document.getElementById('customClinicName').value = '';
+            
+            draft = { dept: '', staff: '', comp: null, moment: '', hospital: '', auditor: '', staffName: '', date: new Date().toISOString().split('T')[0] };
+            
+            setTimeout(() => {
+                switchView('dashboard');
+            }, 1000);
         }
     </script>
 </body>
