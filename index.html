@@ -330,7 +330,7 @@
                     </div>
                 </div>
                 <div class="kpi-card">
-                    <h4>نسبة الالتزام الشهرية</h4>
+                    <h4>نسبة الالتزام الشهيرية</h4>
                     <div class="val" id="rateVal">0%</div>
                     <span id="rateStatus" style="font-size: 0.85rem; font-weight: 800;">---</span>
                 </div>
@@ -485,6 +485,71 @@
             if (nextDate > REAL_TODAY && step > 0) return;
             currentViewDate = nextDate;
             refreshStats();
+        }
+
+        function loadSub(cat, btn) {
+            document.querySelectorAll('#mainCatGrid .option-btn').forEach(b => b.classList.remove('active'));
+            if(btn) btn.classList.add('active');
+            
+            const container = document.getElementById('subContainer');
+            container.innerHTML = '';
+            document.getElementById('deptSearch').value = '';
+            
+            if(cat === 'clinic') {
+                document.getElementById('subCategoryArea').style.display = 'none';
+                document.getElementById('clinicInputArea').style.display = 'flex';
+                draft.dept = '';
+            } else {
+                document.getElementById('clinicInputArea').style.display = 'none';
+                document.getElementById('subCategoryArea').style.display = 'block';
+                
+                depts[cat].forEach(d => {
+                    const dBtn = document.createElement('div');
+                    dBtn.className = 'option-btn';
+                    dBtn.innerText = d;
+                    dBtn.onclick = function() {
+                        document.querySelectorAll('#subContainer .option-btn').forEach(b => b.classList.remove('active'));
+                        dBtn.classList.add('active');
+                        draft.dept = d;
+                    };
+                    container.appendChild(dBtn);
+                });
+            }
+        }
+
+        function filterDepts() {
+            const query = document.getElementById('deptSearch').value.toLowerCase();
+            document.querySelectorAll('#subContainer .option-btn').forEach(btn => {
+                if(btn.innerText.toLowerCase().includes(query)) {
+                    btn.style.display = 'block';
+                } else {
+                    btn.style.display = 'none';
+                }
+            });
+        }
+
+        function confirmClinic() {
+            const name = document.getElementById('customClinicName').value.trim();
+            if(name) {
+                draft.dept = name;
+                showToast('تم اعتماد عيادة: ' + name);
+            } else {
+                alert('الرجاء إدخال اسم العيادة أولاً');
+            }
+        }
+
+        function selectItem(field, val, btn) {
+            const parent = btn.parentElement;
+            parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            draft[field] = val;
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2500);
         }
 
         function refreshStats() {
@@ -676,7 +741,7 @@
             }
 
             c2 = new Chart(document.getElementById('staffChart'), {
-                type: 'doughnut',
+                type: 'pie',
                 data: {
                     labels: staffCats,
                     datasets: [{
@@ -689,84 +754,16 @@
                     plugins: {
                         legend: { position: 'bottom', labels: { color: chartTextColor, font: { family: 'Cairo' } } },
                         datalabels: {
+                            color: '#fff',
+                            font: { weight: 'bold', family: 'Cairo', size: 12 },
                             formatter: (value, ctx) => {
                                 let sum = ctx.dataset.data.reduce((a, b) => a + b, 0);
-                                return sum > 0 ? Math.round((value / sum) * 100) + "%" : "0%";
-                            },
-                            color: '#fff', font: { weight: 'bold', family: 'Cairo', size: 12 }
+                                return sum > 0 ? Math.round((value / sum) * 100) + '%' : '0%';
+                            }
                         }
                     }
                 }
             });
-        }
-
-        // --- المنطق الخاص بـ الـ Forms واختيار الأقسام ---
-        function loadSub(cat, btn) {
-            document.querySelectorAll('#mainCatGrid .option-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            const subContainer = document.getElementById('subContainer');
-            const subCategoryArea = document.getElementById('subCategoryArea');
-            const clinicInputArea = document.getElementById('clinicInputArea');
-            
-            subContainer.innerHTML = '';
-            document.getElementById('deptSearch').value = '';
-            
-            if (cat === 'clinic') {
-                subCategoryArea.style.display = 'none';
-                clinicInputArea.style.display = 'flex';
-                draft.dept = '';
-            } else {
-                clinicInputArea.style.display = 'none';
-                subCategoryArea.style.display = 'block';
-                
-                depts[cat].forEach(d => {
-                    const dBtn = document.createElement('div');
-                    dBtn.className = 'option-btn';
-                    dBtn.innerText = d;
-                    dBtn.onclick = function() {
-                        document.querySelectorAll('#subContainer .option-btn').forEach(b => b.classList.remove('active'));
-                        dBtn.classList.add('active');
-                        draft.dept = d;
-                    };
-                    subContainer.appendChild(dBtn);
-                });
-            }
-        }
-
-        function filterDepts() {
-            const query = document.getElementById('deptSearch').value.toLowerCase();
-            document.querySelectorAll('#subContainer .option-btn').forEach(btn => {
-                if (btn.innerText.toLowerCase().includes(query)) {
-                    btn.style.display = 'block';
-                } else {
-                    btn.style.display = 'none';
-                }
-            });
-        }
-
-        function confirmClinic() {
-            const val = document.getElementById('customClinicName').value.trim();
-            if(val) {
-                draft.dept = val;
-                alert('تم تحديد العيادة: ' + val);
-            } else {
-                alert('يرجى كتابة اسم العيادة أولاً');
-            }
-        }
-
-        function selectItem(type, value, btn) {
-            const parentId = type === 'staff' ? 'staffGroup' : 'compGroup';
-            document.querySelectorAll(`#${parentId} .option-btn`).forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            draft[type] = value;
-        }
-
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.innerText = msg;
-            toast.classList.add('show');
-            setTimeout(() => { toast.classList.remove('show'); }, 3000);
         }
 
         function submitData() {
@@ -775,17 +772,22 @@
             draft.staffName = document.getElementById('staffNameInput').value.trim();
             draft.date = document.getElementById('observationDate').value;
 
-            if (!draft.hospital || !draft.auditor || !draft.dept || !draft.moment || !draft.staff || draft.comp === null || !draft.date) {
-                alert('برجاء استكمال كافة البيانات الأساسية المطلوبة قبل الحفظ.');
-                return;
-            }
+            // التحقق الذكي المنقذ لمنع الحفظ الأعمى أو الضياع
+            if (!draft.hospital) { alert('برجاء اختيار المستشفى'); return; }
+            if (!draft.auditor) { alert('برجاء اختيار الملاحظ المسؤول'); return; }
+            if (!draft.dept) { alert('برجاء اختيار القسم أو العيادة بالتحديد'); return; }
+            if (!draft.moment) { alert('برجاء اختيار اللحظة (5 Moments)'); return; }
+            if (!draft.staff) { alert('برجاء اختيار الفئة (طبيب/تمريض...)'); return; }
+            if (draft.comp === null) { alert('برجاء تحديد النتيجة (ملتزم أو غير ملتزم)'); return; }
+            if (!draft.date) { alert('برجاء تحديد تاريخ المشاهدة'); return; }
 
+            // دفع البيانات لقاعدة البيانات المحلية
             db.push({...draft});
             localStorage.setItem('ic_pro_db', JSON.stringify(db));
             
             showToast('تم التسجيل بنجاح');
 
-            // إعادة ضبط النموذج بطريقة آمنة لا تدمر الـ HTML
+            // تصفير حقول الواجهة بأمان
             document.getElementById('hospitalInput').value = '';
             document.getElementById('auditorInput').value = '';
             document.getElementById('momentInput').value = '';
@@ -797,8 +799,14 @@
             document.getElementById('subCategoryArea').style.display = 'none';
             document.getElementById('clinicInputArea').style.display = 'none';
             
-            draft = { dept: '', staff: '', comp: null, moment: '', hospital: '', auditor: '', staffName: '', date: new Date().toISOString().split('T')[0] };
+            // تصفير كائن المسودة للعملية القادمة
+            let todayStr = new Date().toISOString().split('T')[0];
+            draft = { dept: '', staff: '', comp: null, moment: '', hospital: '', auditor: '', staffName: '', date: todayStr };
             
+            // تحديث الإحصائيات الفوري لتعمل الرسوم البيانية في نفس اللحظة
+            refreshStats();
+
+            // تحويل المستخدم تلقائياً للوحة التحكم لرؤية النتيجة فوراً
             setTimeout(() => {
                 switchView('dashboard');
             }, 1000);
