@@ -68,12 +68,50 @@
             display: flex;
             flex-direction: column;
             padding: 20px;
+            flex-shrink: 0;
         }
 
         .main-content {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
+        }
+
+        /* تعديلات الموبايل الذكية لحل مشكلة الشاشة الجانبية */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: 60px;
+                flex-direction: row;
+                padding: 5px 10px;
+                border-left: none;
+                border-top: 1px solid var(--border);
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 1000;
+                justify-content: space-around;
+                align-items: center;
+                box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+                box-sizing: border-box;
+            }
+            .sidebar h2, .sidebar div:last-child {
+                display: none; /* إخفاء اللوجو والحقوق في الموبايل لتوفير مساحة */
+            }
+            .nav-item {
+                margin-bottom: 0 !important;
+                flex: 1;
+                text-align: center;
+                padding: 8px 5px !important;
+                font-size: 0.9rem;
+            }
+            .main-content {
+                padding: 15px 15px 80px 15px; /* إعطاء مساحة سفلية حتى لا يختفي المحتوى تحت الشريط */
+            }
         }
 
         .month-filter {
@@ -422,7 +460,7 @@
         };
 
         const depts = {
-            reception: ['استقبال الطوارئ', 'استقبال الإصابات', 'استقبال الباطنة', 'استقبال الأطفال', 'استقبال النسا', 'استقبال جراحة عامة', 'CPR', 'غرفة رسم القلب', 'غرفة الغرز'],
+            reception: ['استقبل الطوارئ', 'استقبال الإصابات', 'استقبال الباطنة', 'استقبال الأطفال', 'استقبال النسا', 'استقبال جراحة عامة', 'CPR', 'غرفة رسم القلب', 'غرفة الغرز'],
             ops: ['عمليات الرمد', 'عمليات المسالك', 'عمليات الجراحة العامة', 'عمليات النسا', 'عمليات أنف وأذن', 'عمليات جراحة مخ وأعصاب', 'عمليات عظام', 'عمليات تجميل', 'عمليات القسطرة'],
             icu: ['عناية القلب', 'عناية النسا', 'عناية الصدرية', 'عناية العصبية', 'عناية الأطفال', 'عناية الأطفال الحرجة', 'عناية التخدير', 'عناية باطنة متوسطة', 'مبتسرين (حضانات)'],
             ward: ['قسم الرمد', 'قسم المسالك', 'قسم الجراحة العامة', 'قسم باطنة (حريم)', 'قسم باطنة (رجال)', 'قسم النسا', 'قسم الصدرية', 'قسم العصبية', 'قسم أنف وأذن', 'قسم المتوطنة', 'قسم جراحة مخ وأعصاب', 'قسم العظام', 'قسم الأورام', 'قسم الجلدية', 'قسم الروماتيزم', 'قسم الأوعية', 'قسم الجراحات الميكروسكوبية', 'جراحة أطفال', 'قسم التجميل', 'كلى كبار (فرى)', 'كلى كبار (B&C)', 'كلى أطفال', 'المناظير', 'قسم قلب وصدر'],
@@ -506,7 +544,18 @@
 
             if (showDefaults) {
                 document.getElementById('worstStaff').innerText = "التمريض";
-                document.getElementById('worstDept').innerText = "قسم العظام";
+                
+                if (currentMonthIdx === 1) {       
+                    document.getElementById('worstDept').innerText = "استقبل الطوارئ";
+                } else if (currentMonthIdx === 2) { 
+                    document.getElementById('worstDept').innerText = "قسم العظام";
+                } else if (currentMonthIdx === 3) { 
+                    document.getElementById('worstDept').innerText = "قسم العظام";
+                } else if (currentMonthIdx === 4) { 
+                    document.getElementById('worstDept').innerText = "قسم الجراحة العامة";
+                } else {
+                    document.getElementById('worstDept').innerText = "قسم العظام";
+                }
             } else {
                 document.getElementById('worstStaff').innerText = Object.keys(staffViolations).length > 0 ? Object.keys(staffViolations).reduce((a, b) => staffViolations[a] > staffViolations[b] ? a : b) : "---";
                 document.getElementById('worstDept').innerText = Object.keys(deptViolations).length > 0 ? Object.keys(deptViolations).reduce((a, b) => deptViolations[a] > deptViolations[b] ? a : b) : "---";
@@ -542,7 +591,7 @@
             const chartTextColor = isDark ? '#f8fafc' : '#1e293b';
 
             let uniqueDepts = [
-                'قسم العظام', 'عناية القلب', 'استقبال الطوارئ', 'قسم الجراحة العامة', 
+                'قسم العظام', 'عناية القلب', 'استقبل الطوارئ', 'قسم الجراحة العامة', 
                 'مبتسرين (حضانات)', 'عمليات النسا', 'قسم باطنة (رجال)', 'عناية الأطفال', 
                 'قسم الرمد', 'عمليات العظام', 'استقبال الباطنة', 'قسم الأورام', 
                 'عناية التخدير', 'المعامل', 'العيادات الخارجية'
@@ -662,34 +711,29 @@
                 document.getElementById('subCategoryArea').style.display = 'none';
                 document.getElementById('clinicInputArea').style.display = 'flex';
                 draft.dept = '';
-                return;
+            } else {
+                document.getElementById('clinicInputArea').style.display = 'none';
+                document.getElementById('subCategoryArea').style.display = 'block';
+                
+                depts[cat].forEach(d => {
+                    const btn = document.createElement('div');
+                    btn.className = 'option-btn';
+                    btn.innerText = d;
+                    btn.onclick = () => {
+                        document.querySelectorAll('#subContainer .option-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        draft.dept = d;
+                    };
+                    container.appendChild(btn);
+                });
             }
-
-            document.getElementById('clinicInputArea').style.display = 'none';
-            document.getElementById('subCategoryArea').style.display = 'block';
-
-            const list = depts[cat] || [];
-            list.forEach(d => {
-                const div = document.createElement('div');
-                div.className = 'option-btn';
-                div.innerText = d;
-                div.onclick = function() {
-                    document.querySelectorAll('#subContainer .option-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    draft.dept = d;
-                };
-                container.appendChild(div);
-            });
         }
 
         function filterDepts() {
             const query = document.getElementById('deptSearch').value.toLowerCase();
-            document.querySelectorAll('#subContainer .option-btn').forEach(b => {
-                if(b.innerText.toLowerCase().includes(query)) {
-                    b.style.display = 'block';
-                } else {
-                    b.style.display = 'none';
-                }
+            document.querySelectorAll('#subContainer .option-btn').forEach(btn => {
+                if(btn.innerText.toLowerCase().includes(query)) btn.style.display = 'block';
+                else btn.style.display = 'none';
             });
         }
 
@@ -697,51 +741,46 @@
             const val = document.getElementById('customClinicName').value.trim();
             if(val) {
                 draft.dept = val;
-                alert('تم تحديد العيادة: ' + val);
-            } else {
-                alert('الرجاء إدخال اسم العيادة أولاً');
+                showToast("تم اعتماد العيادة: " + val);
             }
         }
 
-        function selectItem(type, val, el) {
-            const parent = el.parentElement;
-            parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+        function selectItem(field, val, el) {
+            el.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
             el.classList.add('active');
-            draft[type] = val;
+            draft[field] = val;
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
         }
 
         function submitData() {
             draft.hospital = document.getElementById('hospitalInput').value;
             draft.auditor = document.getElementById('auditorInput').value;
             draft.moment = document.getElementById('momentInput').value;
-            draft.staffName = document.getElementById('staffNameInput').value.trim();
+            draft.staffName = document.getElementById('staffNameInput').value;
             draft.date = document.getElementById('observationDate').value;
 
             if(!draft.hospital || !draft.auditor || !draft.dept || !draft.moment || !draft.staff || draft.comp === null || !draft.date) {
-                alert('الرجاء إكمال كافة البيانات الأساسية المطلوبة قبل الحفظ!');
+                alert("برجاء إدخال كافة البيانات المطلوبة");
                 return;
             }
 
             db.push({...draft});
             localStorage.setItem('ic_pro_db', JSON.stringify(db));
-
-            const toast = document.getElementById('toast');
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-
-            // إعادة تعيين نموذج الإدخال
-            draft = { dept: '', staff: '', comp: null, moment: '', hospital: '', auditor: '', staffName: '', date: '' };
-            document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('hospitalInput').value = '';
-            document.getElementById('auditorInput').value = '';
+            showToast("تم تسجيل المشاهدة بنجاح");
+            
             document.getElementById('momentInput').value = '';
             document.getElementById('staffNameInput').value = '';
-            document.getElementById('customClinicName').value = '';
+            document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+            draft.dept = ''; draft.staff = ''; draft.comp = null; draft.moment = '';
             document.getElementById('subCategoryArea').style.display = 'none';
             document.getElementById('clinicInputArea').style.display = 'none';
-            document.getElementById('observationDate').valueAsDate = new Date();
-
-            switchView('dashboard');
+            document.getElementById('customClinicName').value = '';
         }
     </script>
 </body>
