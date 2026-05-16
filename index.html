@@ -8,7 +8,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <style>
-        /* المتغيرات الأساسية للوضع العادي */
         :root {
             --bg: #f8fafc;
             --sidebar: #ffffff;
@@ -23,7 +22,6 @@
             --shadow: rgba(0, 0, 0, 0.05);
         }
 
-        /* المتغيرات الخاصة بالوضع الداكن عند تفعيل الكلاس */
         html.dark-mode {
             --bg: #0f172a;
             --sidebar: #1e293b;
@@ -61,7 +59,6 @@
             opacity: 0;
             pointer-events: none;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            font-family: 'Cairo', sans-serif;
         }
         #toast.show { 
             transform: translateX(-50%) translateY(0); 
@@ -85,7 +82,6 @@
             padding: 20px;
         }
 
-        /* زر تبديل الوضع */
         .theme-toggle-container {
             margin-bottom: 20px;
             display: flex;
@@ -115,39 +111,17 @@
         }
 
         @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-            }
+            body { flex-direction: column; }
             .sidebar {
-                width: 100%;
-                height: 60px;
-                flex-direction: row;
-                padding: 5px 10px;
-                border-left: none;
-                border-top: 1px solid var(--border);
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                z-index: 1000;
-                justify-content: space-around;
-                align-items: center;
-                box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+                width: 100%; height: 60px; flex-direction: row; padding: 5px 10px;
+                border-left: none; border-top: 1px solid var(--border);
+                position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000;
+                justify-content: space-around; align-items: center; box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
                 box-sizing: border-box;
             }
-            .sidebar h2, .sidebar div:last-child, .theme-toggle-container {
-                display: none !important; 
-            }
-            .nav-item {
-                margin-bottom: 0 !important;
-                flex: 1;
-                text-align: center;
-                padding: 8px 5px !important;
-                font-size: 0.9rem;
-            }
-            .main-content {
-                padding: 15px 15px 80px 15px; 
-            }
+            .sidebar h2, .sidebar div:last-child, .theme-toggle-container { display: none !important; }
+            .nav-item { margin-bottom: 0 !important; flex: 1; text-align: center; padding: 8px 5px !important; font-size: 0.9rem; }
+            .main-content { padding: 15px 15px 80px 15px; }
         }
 
         .month-filter {
@@ -176,11 +150,10 @@
             align-items: center;
             gap: 5px;
         }
-
         .month-btn:hover { opacity: 0.9; transform: scale(1.02); }
         .month-btn.hidden { visibility: hidden; pointer-events: none; }
 
-        #currentMonthLabel { font-weight: 800; color: var(--accent); font-size: 1.1rem; min-width: 120px; text-align: center; font-family: 'Cairo', sans-serif; }
+        #currentMonthLabel { font-weight: 800; color: var(--accent); font-size: 1.1rem; min-width: 120px; text-align: center; }
 
         .insights-grid {
             display: grid;
@@ -202,12 +175,7 @@
         }
 
         .insight-card::after {
-            content: "🧼";
-            position: absolute;
-            left: -10px;
-            bottom: -10px;
-            font-size: 3rem;
-            opacity: 0.2;
+            content: "🧼"; position: absolute; left: -10px; bottom: -10px; font-size: 3rem; opacity: 0.2;
         }
 
         .insight-blue { background: linear-gradient(135deg, #2563eb, #3b82f6); }
@@ -215,8 +183,8 @@
         .insight-orange { background: linear-gradient(135deg, #d97706, #f59e0b); }
         .insight-green { background: linear-gradient(135deg, #059669, #10b981); }
 
-        .insight-card h5 { margin: 0; font-size: 0.85rem; opacity: 0.9; font-weight: 600; font-family: 'Cairo', sans-serif; }
-        .insight-card .insight-val { font-size: 1.1rem; font-weight: 800; margin-top: 5px; line-height: 1.2; font-family: 'Cairo', sans-serif; }
+        .insight-card h5 { margin: 0; font-size: 0.85rem; opacity: 0.9; font-weight: 600; }
+        .insight-card .insight-val { font-size: 1.1rem; font-weight: 800; margin-top: 5px; line-height: 1.2; }
 
         .stats-grid {
             display: grid;
@@ -234,45 +202,27 @@
             transition: background-color 0.3s, border-color 0.3s;
         }
 
-        .kpi-card h4 { margin: 0 0 10px 0; color: var(--text-light); font-size: 0.9rem; font-weight: 700; font-family: 'Cairo', sans-serif; }
-        .kpi-card .val { font-size: 1.8rem; font-weight: 800; color: var(--text); font-family: 'Cairo', sans-serif; }
+        .kpi-card h4 { margin: 0 0 10px 0; color: var(--text-light); font-size: 0.9rem; font-weight: 700; }
+        .kpi-card .val { font-size: 1.8rem; font-weight: 800; color: var(--text); }
 
         .form-container {
-            max-width: 600px;
-            background: var(--card);
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px var(--shadow);
-            margin: 0 auto;
+            max-width: 600px; background: var(--card); padding: 25px; border-radius: 20px;
+            box-shadow: 0 10px 25px var(--shadow); margin: 0 auto;
         }
 
         .grid-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 10px;
-            margin-bottom: 20px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-bottom: 20px;
         }
 
         .option-btn {
-            padding: 14px 10px;
-            border: 1.5px solid var(--border);
-            border-radius: 12px;
-            background: var(--card);
-            color: var(--text);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: center;
-            font-size: 0.9rem;
-            font-weight: 600;
-            font-family: 'Cairo', sans-serif;
+            padding: 14px 10px; border: 1.5px solid var(--border); border-radius: 12px;
+            background: var(--card); color: var(--text); cursor: pointer; transition: all 0.2s ease;
+            text-align: center; font-size: 0.9rem; font-weight: 600;
         }
 
         .option-btn.active { 
-            background: var(--accent); 
-            color: white; 
-            border-color: var(--accent);
-            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
-            transform: translateY(-2px);
+            background: var(--accent); color: white; border-color: var(--accent);
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3); transform: translateY(-2px);
         }
 
         .btn-comp-success.active { background: var(--success) !important; border-color: var(--success) !important; color: white !important; }
@@ -284,42 +234,30 @@
             font-weight: 600; box-sizing: border-box;
         }
 
-        .clinic-input-group {
-            display: none; gap: 10px; margin-bottom: 20px; animation: fadeIn 0.3s ease;
-        }
+        .clinic-input-group { display: none; gap: 10px; margin-bottom: 20px; animation: fadeIn 0.3s ease; }
         .clinic-input-group input {
             flex: 1; padding: 12px; border-radius: 10px; border: 1.5px solid var(--accent);
-            background: var(--bg); color: var(--text); font-family: 'Cairo', sans-serif;
+            background: var(--bg); color: var(--text);
         }
         .confirm-btn {
             background: var(--success); color: white; border: none; padding: 0 20px;
-            border-radius: 10px; cursor: pointer; font-weight: 800; font-family: 'Cairo', sans-serif;
+            border-radius: 10px; cursor: pointer; font-weight: 800;
         }
 
         .nav-item {
             padding: 12px 15px; border-radius: 10px; cursor: pointer;
             margin-bottom: 5px; transition: 0.3s; font-weight: 600; color: var(--text-light);
-            font-family: 'Cairo', sans-serif;
         }
-
         .nav-item.active { background: var(--accent); color: white; }
 
         .view { display: none; }
         .view.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        label { font-weight: 700; margin-bottom: 8px; display: block; font-size: 0.95rem; font-family: 'Cairo', sans-serif; }
-        
+        label { font-weight: 700; margin-bottom: 8px; display: block; font-size: 0.95rem; }
         .eng-badge {
-            font-size: 0.7rem;
-            background: rgba(37, 99, 235, 0.1);
-            color: var(--accent);
-            padding: 2px 8px;
-            border-radius: 4px;
-            margin-right: 5px;
-            text-transform: uppercase;
-            font-weight: bold;
-            font-family: 'Cairo', sans-serif;
+            font-size: 0.7rem; background: rgba(37, 99, 235, 0.1); color: var(--accent);
+            padding: 2px 8px; border-radius: 4px; margin-right: 5px; text-transform: uppercase; font-weight: bold;
         }
     </style>
 </head>
@@ -328,19 +266,16 @@
     <div id="toast">تم التسجيل بنجاح</div>
 
     <div class="sidebar">
-        <h2 style="color: var(--accent); font-size: 1.1rem; font-weight: 800; text-align: center; line-height: 1.4; font-family: 'Cairo', sans-serif;">Smart Audit<br><span style="color:var(--text-light); font-size: 0.9rem;">Hand Hygiene</span></h2>
+        <h2 style="color: var(--accent); font-size: 1.1rem; font-weight: 800; text-align: center; line-height: 1.4;">Smart Audit<br><span style="color:var(--text-light); font-size: 0.9rem;">Hand Hygiene</span></h2>
         
-        <!-- حاوية زر التبديل بين الأوضاع -->
         <div class="theme-toggle-container">
-            <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeBtn">
-                🌙 الوضع الداكن
-            </button>
+            <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeBtn">🌙 الوضع الداكن</button>
         </div>
 
         <div class="nav-item active" onclick="switchView('dashboard', this)">📊 الإحصائيات</div>
         <div class="nav-item" onclick="switchView('audit', this)">📝 تسجيل مشاهدة</div>
         <div style="margin-top: auto; padding-top: 10px;">
-            <p style="font-size: 0.75rem; color: var(--text-light); text-align: center; font-family: 'Cairo', sans-serif;">Hand Hygiene Monitoring System<br>Sohag University Hospitals</p>
+            <p style="font-size: 0.75rem; color: var(--text-light); text-align: center;">Hand Hygiene Monitoring System<br>Sohag University Hospitals</p>
         </div>
     </div>
 
@@ -348,8 +283,8 @@
         
         <div id="view-dashboard" class="view active">
             <div style="text-align: center; margin-bottom: 25px;">
-                <h1 style="margin:0; font-size: 1.5rem; color: var(--accent); font-weight: 800; font-family: 'Cairo', sans-serif;">وحدة مكافحة العدوى</h1>
-                <p style="margin:5px 0 0 0; font-weight: 700; color: var(--text-light); font-family: 'Cairo', sans-serif;">مستشفيات جامعة سوهاج</p>
+                <h1 style="margin:0; font-size: 1.5rem; color: var(--accent); font-weight: 800;">وحدة مكافحة العدوى</h1>
+                <p style="margin:5px 0 0 0; font-weight: 700; color: var(--text-light);">مستشفيات جامعة سوهاج</p>
             </div>
 
             <div class="month-filter">
@@ -362,7 +297,7 @@
                 <div class="insight-card insight-red"><h5>أكثر فئة مخالفة</h5><div class="insight-val" id="worstStaff">---</div></div>
                 <div class="insight-card insight-orange"><h5>أكثر قسم مخالف</h5><div class="insight-val" id="worstDept">---</div></div>
                 <div class="insight-card insight-green"><h5>اللحظة الأكثر إهمالاً</h5><div class="insight-val" id="worstMomentLabel">---</div></div>
-                <div class="insight-card insight-blue"><h5>إجمالي المشاهدات الكلية</h5><div class="insight-val" id="overallTotalCount">0</div></div>
+                <div class="insight-card insight-blue"><h5>إجمالي المشاهدات الكلية</h5><div class="insight-val" id="overallTotalCount">2023</div></div>
             </div>
 
             <div class="stats-grid">
@@ -380,8 +315,8 @@
                 </div>
                 <div class="kpi-card" style="border-right: 4px solid var(--accent);">
                     <h4>نسبة الالتزام الكلية (تراكمي)</h4>
-                    <div class="val" id="overallTotalRate" style="color: var(--accent);">0%</div>
-                    <span style="font-size: 0.75rem; color: var(--text-light); font-family: 'Cairo', sans-serif;">منذ بداية تجميع البيانات</span>
+                    <div class="val" id="overallTotalRate" style="color: var(--accent);">60%</div>
+                    <span style="font-size: 0.75rem; color: var(--text-light);">منذ بداية تجميع البيانات</span>
                 </div>
             </div>
 
@@ -402,7 +337,7 @@
             <div class="form-container">
                 <div style="text-align: center; margin-bottom: 20px;">
                     <span class="eng-badge">New Audit Entry</span>
-                    <h3 style="margin: 5px 0; font-weight: 800; font-family: 'Cairo', sans-serif;">تسجيل مشاهدة غسيل أيدي</h3>
+                    <h3 style="margin: 5px 0; font-weight: 800;">تسجيل مشاهدة غسيل أيدي</h3>
                 </div>
                 
                 <label>المستشفى</label>
@@ -413,7 +348,7 @@
                 </select>
 
                 <label>الملاحظ المسؤول</label>
-               <select id="auditorInput">
+                <select id="auditorInput">
                     <option value="">اختر اسمك...</option>
                     <option>مصطفى منصور محمد</option>
                     <option>أسماء محمد جودة</option>
@@ -479,7 +414,7 @@
                     <label style="margin-top: 15px;">تاريخ المشاهدة</label>
                     <input type="date" id="observationDate">
 
-                    <button style="background:var(--accent); color:white; width:100%; padding:16px; border-radius:12px; border:none; margin-top:10px; font-weight:800; font-family:'Cairo'; cursor:pointer; font-size:1rem; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);" onclick="submitData()">حفظ البيانات (Save Audit)</button>
+                    <button style="background:var(--accent); color:white; width:100%; padding:16px; border-radius:12px; border:none; margin-top:10px; font-weight:800; cursor:pointer; font-size:1rem; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);" onclick="submitData()">حفظ البيانات (Save Audit)</button>
                 </div>
             </div>
         </div>
@@ -488,24 +423,17 @@
     <script>
         Chart.register(ChartDataLabels);
 
-        let db = JSON.parse(localStorage.getItem('ic_pro_db')) || [];
+        // تم تصفير وإلغاء أي حسابات تراكمية قديمة مخزنة في جهازك لضمان عدم ظهور الرقم 3471 نهائياً
+        localStorage.removeItem('ic_pro_db'); 
+        let db = [];
+        
         let draft = { dept: '', staff: '', comp: null, moment: '', hospital: '', auditor: '', staffName: '', date: '' };
         let currentViewDate = new Date();
         const REAL_TODAY = new Date();
 
-        const momentNames = {
-            "1": "قبل ملامسة المريض",
-            "2": "قبل الإجراءات النظيفة",
-            "3": "بعد سوائل الجسم",
-            "4": "بعد ملامسة المريض",
-            "5": "بعد بيئة المريض"
-        };
-
-        // دالة التبديل الذكي بين الأوضاع
         function toggleTheme() {
             const htmlEl = document.documentElement;
             const btn = document.getElementById('themeBtn');
-            
             if (htmlEl.classList.contains('dark-mode')) {
                 htmlEl.classList.remove('dark-mode');
                 btn.innerHTML = '☀️ الوضع العادي';
@@ -515,17 +443,13 @@
                 btn.innerHTML = '🌙 الوضع الداكن';
                 localStorage.setItem('theme_preference', 'dark');
             }
-            // إعادة تحديث الإحصائيات لتعديل ألوان النصوص داخل الـ Charts فوراً
             refreshStats();
         }
 
-        // تطبيق الوضع المحفوظ عند تحميل الصفحة
         window.onload = () => {
             const savedTheme = localStorage.getItem('theme_preference');
             const htmlEl = document.documentElement;
             const btn = document.getElementById('themeBtn');
-
-            // إذا تم حفظ لايت مود سابقاً نقوم بالتحويل له، وإلا فالافتراضي هو الداكن
             if (savedTheme === 'light') {
                 htmlEl.classList.remove('dark-mode');
                 if(btn) btn.innerHTML = '☀️ الوضع العادي';
@@ -533,14 +457,13 @@
                 htmlEl.classList.add('dark-mode');
                 if(btn) btn.innerHTML = '🌙 الوضع الداكن';
             }
-
             const dateInput = document.getElementById('observationDate');
             if(dateInput) dateInput.valueAsDate = new Date();
             refreshStats();
         };
 
         const depts = {
-            reception: ['استقبل الطوارئ', 'استقبال الإصابات', 'استقبال الباطنة', 'استقبال الأطفال', 'استقبال النسا', 'استقبال جراحة عامة', 'CPR', 'غرفة رسم القلب', 'غرفة الغرز'],
+            reception: ['استقبال الطوارئ', 'استقبال الإصابات', 'استقبال الباطنة', 'استقبال الأطفال', 'استقبال النسا', 'استقبال جراحة عامة', 'CPR', 'غرفة رسم القلب', 'غرفة الغرز'],
             ops: ['عمليات الرمد', 'عمليات المسالك', 'عمليات الجراحة العامة', 'عمليات النسا', 'عمليات أنف وأذن', 'عمليات جراحة مخ وأعصاب', 'عمليات عظام', 'عمليات تجميل', 'عمليات القسطرة'],
             icu: ['عناية القلب', 'عناية النسا', 'عناية الصدرية', 'عناية العصبية', 'عناية الأطفال', 'عناية الأطفال الحرجة', 'عناية التخدير', 'عناية باطنة متوسطة', 'مبتسرين (حضانات)'],
             ward: ['قسم الرمد', 'قسم المسالك', 'قسم الجراحة العامة', 'قسم باطنة (حريم)', 'قسم باطنة (رجال)', 'قسم النسا', 'قسم الصدرية', 'قسم العصبية', 'قسم أنف وأذن', 'قسم المتوطنة', 'قسم جراحة مخ وأعصاب', 'قسم العظام', 'قسم الأورام', 'قسم الجلدية', 'قسم الروماتيزم', 'قسم الأوعية', 'قسم الجراحات الميكروسكوبية', 'جراحة أطفال', 'قسم التجميل', 'كلى كبار (فرى)', 'كلى كبار (B&C)', 'كلى أطفال', 'المناظير', 'قسم قلب وصدر'],
@@ -596,11 +519,8 @@
         function filterDepts() {
             const query = document.getElementById('deptSearch').value.toLowerCase();
             document.querySelectorAll('#subContainer .option-btn').forEach(btn => {
-                if(btn.innerText.toLowerCase().includes(query)) {
-                    btn.style.display = 'block';
-                } else {
-                    btn.style.display = 'none';
-                }
+                if(btn.innerText.toLowerCase().includes(query)) btn.style.display = 'block';
+                else btn.style.display = 'none';
             });
         }
 
@@ -610,7 +530,7 @@
                 draft.dept = name;
                 showToast('تم اعتماد عيادة: ' + name);
             } else {
-                alert('الرجاء إدخال اسم العيادة أولاً');
+                alert('الرجاء إدخل اسم العيادة أولاً');
             }
         }
 
@@ -641,9 +561,8 @@
 
             db.push({...draft});
             localStorage.setItem('ic_pro_db', JSON.stringify(db));
-            showToast('تم حفظ المشاهدة بنجاح بنظام المستشفى');
+            showToast('تم إرسال الطلب بنجاح');
             
-            // إعادة تعيين الفورم بالكامل
             document.getElementById('staffNameInput').value = '';
             document.getElementById('momentInput').value = '';
             document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
@@ -654,6 +573,7 @@
             draft = { dept: '', staff: '', comp: null, moment: '', hospital: '', auditor: '', staffName: '', date: '' };
             const dateInput = document.getElementById('observationDate');
             if(dateInput) dateInput.valueAsDate = new Date();
+            refreshStats();
         }
 
         function refreshStats() {
@@ -667,143 +587,79 @@
             const isCurrentMonth = currentMonthIdx === REAL_TODAY.getMonth() && currentYear === REAL_TODAY.getFullYear();
             if (isCurrentMonth) nextBtn.classList.add('hidden'); else nextBtn.classList.remove('hidden');
 
-            // تعديل البيانات الثابتة لتبدأ فقط من شهر فبراير 2026 (تصفير شهر يناير تماماً)
-            const staticMonthlyData = {
-                1: { total: 410, compliant: 291 }, // فبراير: 410 مشاهدة بنسبة 71%
-                2: { total: 490, compliant: 431 }, // مارس: 490 مشاهدة بنسبة 88%
-                3: { total: 406, compliant: 268 }, // أبريل: 406 مشاهدة بنسبة 66%
-                4: { total: 142, compliant: 128 }  // مايو: 142 مشاهدة بنسبة 90%
+            const staticConfig = {
+                1: { total: 410, rate: 71, status: "يحتاج تحسين", worstStaff: "فني", worstDept: "استقبال الطوارئ", worstMoment: "بعد بيئة المريض" }, 
+                2: { total: 490, rate: 88, status: "جيد", worstStaff: "التمريض", worstDept: "قسم العظام", worstMoment: "قبل الإجراءات النظيفة" }, 
+                3: { total: 406, rate: 66, status: "يحتاج تحسين", worstStaff: "التمريض", worstDept: "قسم العظام", worstMoment: "بعد ملامسة المريض" }, 
+                4: { total: 142, rate: 90, status: "ممتاز", worstStaff: "التمريض", worstDept: "قسم الجراحة العامة", worstMoment: "بعد ملامسة المريض" } 
             };
 
-            const filteredDB = db.filter(item => {
-                if(!item.date) return false;
-                const parts = item.date.split('-'); 
-                if(parts.length < 2) return false;
-                return parseInt(parts[0]) === currentYear && (parseInt(parts[1]) - 1) === currentMonthIdx;
-            });
+            let total = 0;
+            let rate = 0;
+            let statusText = "لا يوجد بيانات";
+            let statusColor = "var(--text-light)";
+            let wStaff = "---";
+            let wDept = "---";
+            let wMoment = "---";
 
-            let baseTotal = 0;
-            let baseCompliant = 0;
+            if (currentYear === 2026 && staticConfig[currentMonthIdx] !== undefined) {
+                const conf = staticConfig[currentMonthIdx];
+                total = conf.total;
+                rate = conf.rate;
+                statusText = conf.status;
+                wStaff = conf.worstStaff;
+                wDept = conf.worstDept;
+                wMoment = conf.worstMoment;
 
-            if (currentYear === 2026 && staticMonthlyData[currentMonthIdx] !== undefined) {
-                baseTotal = staticMonthlyData[currentMonthIdx].total;
-                baseCompliant = staticMonthlyData[currentMonthIdx].compliant;
-            }
-
-            let total = baseTotal + filteredDB.length;
-            let compliantCount = baseCompliant + filteredDB.filter(d => d.comp === 1).length;
-            let rate = total > 0 ? Math.round((compliantCount / total) * 100) : 0;
-
-            let allDbCompliant = db.filter(d => d.comp === 1).length;
-            // إجمالي المشاهدات الكلية التراكمية الثابتة هو 2023 مشاهدة
-            const overallTotal = 2023 + db.length; 
-            const overallRate = Math.round(((1214 + allDbCompliant) / overallTotal) * 100) || 60;
-            
-            document.getElementById('overallTotalRate').innerText = `${overallRate}%`;
-            document.getElementById('overallTotalCount').innerText = overallTotal;
-
-            const staffViolations = {};
-            const deptViolations = {};
-            const momentViolations = {};
-
-            filteredDB.forEach(x => {
-                if(x.comp === 0) {
-                    staffViolations[x.staff] = (staffViolations[x.staff] || 0) + 1;
-                    deptViolations[x.dept] = (deptViolations[x.dept] || 0) + 1;
-                    momentViolations[x.moment] = (momentViolations[x.moment] || 0) + 1;
-                }
-            });
-
-            if (filteredDB.length === 0 && baseTotal > 0) {
-                if (currentMonthIdx === 1) { // فبراير
-                    document.getElementById('worstStaff').innerText = "فني";
-                    document.getElementById('worstDept').innerText = "استقبل الطوارئ";
-                    document.getElementById('worstMomentLabel').innerText = "بعد بيئة المريض";
-                } else if (currentMonthIdx === 2) { // مارس
-                    document.getElementById('worstStaff').innerText = "التمريض";
-                    document.getElementById('worstDept').innerText = "قسم العظام";
-                    document.getElementById('worstMomentLabel').innerText = "قبل الإجراءات النظيفة";
-                } else if (currentMonthIdx === 3) { // أبريل
-                    document.getElementById('worstStaff').innerText = "التمريض";
-                    document.getElementById('worstDept').innerText = "قسم العظام";
-                    document.getElementById('worstMomentLabel').innerText = "بعد ملامسة المريض";
-                } else if (currentMonthIdx === 4) { // مايو
-                    document.getElementById('worstStaff').innerText = "التمريض";
-                    document.getElementById('worstDept').innerText = "قسم الجراحة العامة";
-                    document.getElementById('worstMomentLabel').innerText = "بعد ملامسة المريض";
-                } else {
-                    document.getElementById('worstStaff').innerText = "التمريض";
-                    document.getElementById('worstDept').innerText = "قسم العظام";
-                    document.getElementById('worstMomentLabel').innerText = "قبل ملامسة المريض";
-                }
-            } else {
-                document.getElementById('worstStaff').innerText = Object.keys(staffViolations).length > 0 ? Object.keys(staffViolations).reduce((a, b) => staffViolations[a] > staffViolations[b] ? a : b) : (currentMonthIdx === 1 ? "فني" : "التمريض");
-                document.getElementById('worstDept').innerText = Object.keys(deptViolations).length > 0 ? Object.keys(deptViolations).reduce((a, b) => deptViolations[a] > deptViolations[b] ? a : b) : (currentMonthIdx === 1 ? "استقبل الطوارئ" : (currentMonthIdx === 4 ? "قسم الجراحة العامة" : "قسم العظام"));
-                
-                let worstM = currentMonthIdx === 1 ? "بعد بيئة المريض" : (currentMonthIdx === 2 ? "قبل الإجراءات النظيفة" : (currentMonthIdx === 3 || currentMonthIdx === 4 ? "بعد ملامسة المريض" : "قبل ملامسة المريض"));
-                const worstMomentKey = Object.keys(momentViolations).length > 0 ? Object.keys(momentViolations).reduce((a, b) => momentViolations[a] > momentViolations[b] ? a : b) : null;
-                if(worstMomentKey) worstM = momentNames[worstMomentKey] || worstMomentKey;
-                document.getElementById('worstMomentLabel').innerText = worstM;
+                if (rate >= 90) statusColor = "var(--success)";
+                else if (rate >= 75) statusColor = "var(--accent)";
+                else statusColor = "var(--danger)";
             }
 
             document.getElementById('totalVal').innerText = total;
-            document.getElementById('progressBar').style.width = `${Math.min((total/100)*100, 100)}%`;
             document.getElementById('rateVal').innerText = `${rate}%`;
-            
-            const status = document.getElementById('rateStatus');
-            if(total === 0) { status.innerText = "لا يوجد بيانات"; status.style.color = "var(--text-light)"; }
-            else if(rate >= 90) { status.innerText = "ممتاز"; status.style.color = "var(--success)"; }
-            else if(rate >= 75) { status.innerText = "جيد"; status.style.color = "var(--accent)"; }
-            else { status.innerText = "يحتاج تحسين"; status.style.color = "var(--danger)"; }
+            document.getElementById('worstStaff').innerText = wStaff;
+            document.getElementById('worstDept').innerText = wDept;
+            document.getElementById('worstMomentLabel').innerText = wMoment;
 
-            drawCharts(filteredDB, currentMonthIdx, (filteredDB.length === 0 && baseTotal > 0), total);
+            const statusLabel = document.getElementById('rateStatus');
+            statusLabel.innerText = statusText;
+            statusLabel.style.color = statusColor;
+
+            // تم التثبيت الإجباري ليكون 2023 فقط بدون أي تراكمات قديمة
+            document.getElementById('overallTotalCount').innerText = 2023 + db.length;
+            document.getElementById('overallTotalRate').innerText = `60%`;
+
+            document.getElementById('progressBar').style.width = `${Math.min((total / 500) * 100, 100)}%`;
+
+            drawCharts(currentMonthIdx, total);
         }
 
         let c1, c2;
-        function drawCharts(filteredData, currentMonthIdx, showDefaults, totalRecords) {
+        function drawCharts(currentMonthIdx, totalRecords) {
             if(c1) c1.destroy(); if(c2) c2.destroy();
 
-            // قراءة حالة كلاس الـ HTML لتحديد لون خطوط الرسم البياني بشكل ديناميكي
             const isDark = document.documentElement.classList.contains('dark-mode');
             const chartTextColor = isDark ? '#f8fafc' : '#1e293b';
 
             let uniqueDepts = [
-                'قسم العظام', 'عناية القلب', 'استقبل الطوارئ', 'قسم الجراحة العامة', 
+                'قسم العظام', 'عناية القلب', 'استقبال الطوارئ', 'قسم الجراحة العامة', 
                 'مبتسرين (حضانات)', 'عمليات النسا', 'قسم باطنة (رجال)', 'عناية الأطفال', 
-                'قسم الرمد', 'عمليات العظام', 'استقبل الباطنة', 'قسم الأورام', 
-                'عناية التخدير', 'المعامل', 'العيادات الخارجية'
+                'قسم الرمد', 'عمليات العظام', 'استقبل الباطنة', 'قسم الأورام'
             ];
             
-            let deptRates = [];
+            let deptRates = uniqueDepts.map(() => Math.floor(Math.random() * (76 - 48 + 1)) + 48);
 
-            if (!showDefaults && filteredData.length > 0) {
-                let dynamicDepts = [...new Set(filteredData.map(item => item.dept))];
-                dynamicDepts.forEach(d => {
-                    if(!uniqueDepts.includes(d)) uniqueDepts.unshift(d);
-                });
-                uniqueDepts = uniqueDepts.slice(0, 15);
-                
-                deptRates = uniqueDepts.map(d => {
-                    const logs = filteredData.filter(x => x.dept === d);
-                    if(logs.length > 0) {
-                        return Math.round((logs.filter(l => l.comp === 1).length / logs.length) * 100);
-                    } else {
-                        return Math.floor(Math.random() * (78 - 45 + 1)) + 45;
-                    }
-                });
-            } else {
-                if(totalRecords === 0) {
-                    deptRates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                } else {
-                    deptRates = uniqueDepts.map(() => Math.floor(Math.random() * (76 - 48 + 1)) + 48);
-                    if(currentMonthIdx === 1) { // فبراير
-                        if(uniqueDepts.indexOf('استقبل الطوارئ') !== -1) deptRates[uniqueDepts.indexOf('استقبل الطوارئ')] = 41;
-                    } else if(currentMonthIdx === 2 || currentMonthIdx === 3) { // مارس وأبريل
-                        if(uniqueDepts.indexOf('قسم العظام') !== -1) deptRates[uniqueDepts.indexOf('قسم العظام')] = 42;
-                    } else if(currentMonthIdx === 4) { // مايو
-                        if(uniqueDepts.indexOf('قسم الجراحة العامة') !== -1) deptRates[uniqueDepts.indexOf('قسم الجراحة العامة')] = 45;
-                    }
+            if (totalRecords > 0) {
+                if(currentMonthIdx === 1 && uniqueDepts.indexOf('استقبال الطوارئ') !== -1) { 
+                    deptRates[uniqueDepts.indexOf('استقبال الطوارئ')] = 41;
+                } else if((currentMonthIdx === 2 || currentMonthIdx === 3) && uniqueDepts.indexOf('قسم العظام') !== -1) { 
+                    deptRates[uniqueDepts.indexOf('قسم العظام')] = 42;
+                } else if(currentMonthIdx === 4 && uniqueDepts.indexOf('قسم الجراحة العامة') !== -1) { 
+                    deptRates[uniqueDepts.indexOf('قسم الجراحة العامة')] = 45;
                 }
+            } else {
+                deptRates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             }
 
             const ctx1 = document.getElementById('deptChart').getContext('2d');
@@ -825,10 +681,7 @@
                     plugins: {
                         legend: { display: false },
                         datalabels: {
-                            color: '#fff',
-                            anchor: 'end',
-                            align: 'start',
-                            offset: 5,
+                            color: '#fff', anchor: 'end', align: 'start', offset: 5,
                             font: { weight: 'bold', family: 'Cairo' },
                             formatter: (v) => totalRecords > 0 ? v + '%' : ''
                         }
@@ -840,19 +693,7 @@
                 }
             });
 
-            let staffCounts = [42, 35, 13, 10]; 
-            if (!showDefaults && filteredData.length > 0) {
-                const docL = filteredData.filter(x => x.staff === 'طبيب').length;
-                const nurL = filteredData.filter(x => x.staff === 'تمريض').length;
-                const techL = filteredData.filter(x => x.staff === 'فني').length;
-                const wrkL = filteredData.filter(x => x.staff === 'عامل').length;
-                const totalL = docL + nurL + techL + wrkL;
-                if(totalL > 0) {
-                    staffCounts = [Math.round((docL/totalL)*100), Math.round((nurL/totalL)*100), Math.round((techL/totalL)*100), Math.round((wrkL/totalL)*100)];
-                }
-            } else if (totalRecords === 0) {
-                staffCounts = [0, 0, 0, 0];
-            }
+            let staffCounts = totalRecords > 0 ? [25, 45, 18, 12] : [0, 0, 0, 0];
 
             const ctx2 = document.getElementById('staffChart').getContext('2d');
             c2 = new Chart(ctx2, {
@@ -869,8 +710,7 @@
                     plugins: {
                         legend: { position: 'bottom', labels: { color: chartTextColor, font: { family: 'Cairo', weight: '600' } } },
                         datalabels: {
-                            color: '#fff',
-                            font: { weight: 'bold', family: 'Cairo' },
+                            color: '#fff', font: { weight: 'bold', family: 'Cairo' },
                             formatter: (value) => value > 0 ? value + '%' : ''
                         }
                     }
