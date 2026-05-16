@@ -88,26 +88,28 @@
             justify-content: center;
         }
 
+        /* تعديل ألوان وحجم زر تغيير الوضع ليكون ظاهراً دائماً بوضوح */
         .theme-toggle-btn {
-            background: var(--bg);
-            color: var(--text);
-            border: 1px solid var(--border);
-            padding: 8px 16px;
+            background-color: #2563eb !important;
+            color: #ffffff !important;
+            border: none;
+            padding: 10px 16px;
             border-radius: 10px;
             cursor: pointer;
             font-family: 'Cairo', sans-serif;
             font-weight: 700;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             display: flex;
             align-items: center;
             gap: 8px;
             width: 100%;
             justify-content: center;
             transition: all 0.2s ease;
-            box-shadow: 0 2px 4px var(--shadow);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
         }
         .theme-toggle-btn:hover {
-            border-color: var(--accent);
+            opacity: 0.9;
+            transform: translateY(-1px);
         }
 
         @media (max-width: 768px) {
@@ -423,7 +425,6 @@
     <script>
         Chart.register(ChartDataLabels);
 
-        // تم تصفير وإلغاء أي حسابات تراكمية قديمة مخزنة في جهازك لضمان عدم ظهور الرقم 3471 نهائياً
         localStorage.removeItem('ic_pro_db'); 
         let db = [];
         
@@ -626,7 +627,6 @@
             statusLabel.innerText = statusText;
             statusLabel.style.color = statusColor;
 
-            // تم التثبيت الإجباري ليكون 2023 فقط بدون أي تراكمات قديمة
             document.getElementById('overallTotalCount').innerText = 2023 + db.length;
             document.getElementById('overallTotalRate').innerText = `60%`;
 
