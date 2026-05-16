@@ -82,34 +82,69 @@
             padding: 20px;
         }
 
-        .theme-toggle-container {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
-        }
-
-        /* تعديل ألوان وحجم زر تغيير الوضع ليكون ظاهراً دائماً بوضوح */
-        .theme-toggle-btn {
-            background-color: #2563eb !important;
-            color: #ffffff !important;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-family: 'Cairo', sans-serif;
-            font-weight: 700;
-            font-size: 0.9rem;
+        /* تصميم مفتاح التبديل (Switch Toggle) الجديد */
+        .theme-switch-wrapper {
             display: flex;
             align-items: center;
-            gap: 8px;
-            width: 100%;
             justify-content: center;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+            gap: 10px;
+            margin-bottom: 25px;
+            padding: 10px;
+            background: rgba(0,0,0,0.03);
+            border-radius: 12px;
         }
-        .theme-toggle-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
+        html.dark-mode .theme-switch-wrapper {
+            background: rgba(255,255,255,0.03);
+        }
+
+        .theme-switch-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-light);
+            margin: 0;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1;
+            transition: .3s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        input:checked + .slider {
+            background-color: #2563eb;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
         }
 
         @media (max-width: 768px) {
@@ -121,7 +156,7 @@
                 justify-content: space-around; align-items: center; box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
                 box-sizing: border-box;
             }
-            .sidebar h2, .sidebar div:last-child, .theme-toggle-container { display: none !important; }
+            .sidebar h2, .sidebar div:last-child, .theme-switch-wrapper { display: none !important; }
             .nav-item { margin-bottom: 0 !important; flex: 1; text-align: center; padding: 8px 5px !important; font-size: 0.9rem; }
             .main-content { padding: 15px 15px 80px 15px; }
         }
@@ -270,8 +305,14 @@
     <div class="sidebar">
         <h2 style="color: var(--accent); font-size: 1.1rem; font-weight: 800; text-align: center; line-height: 1.4;">Smart Audit<br><span style="color:var(--text-light); font-size: 0.9rem;">Hand Hygiene</span></h2>
         
-        <div class="theme-toggle-container">
-            <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeBtn">🌙 الوضع الداكن</button>
+        <!-- عنصر السويتش الجديد للتبديل بين الوضعين -->
+        <div class="theme-switch-wrapper">
+            <span class="theme-switch-label">☀️ العادي</span>
+            <label class="switch">
+                <input type="checkbox" id="themeCheckbox" onchange="toggleTheme()">
+                <span class="slider"></span>
+            </label>
+            <span class="theme-switch-label">🌙 الداكن</span>
         </div>
 
         <div class="nav-item active" onclick="switchView('dashboard', this)">📊 الإحصائيات</div>
@@ -432,17 +473,17 @@
         let currentViewDate = new Date();
         const REAL_TODAY = new Date();
 
+        // دالة التبديل الذكية مع السويتش
         function toggleTheme() {
             const htmlEl = document.documentElement;
-            const btn = document.getElementById('themeBtn');
-            if (htmlEl.classList.contains('dark-mode')) {
-                htmlEl.classList.remove('dark-mode');
-                btn.innerHTML = '☀️ الوضع العادي';
-                localStorage.setItem('theme_preference', 'light');
-            } else {
+            const checkbox = document.getElementById('themeCheckbox');
+            
+            if (checkbox.checked) {
                 htmlEl.classList.add('dark-mode');
-                btn.innerHTML = '🌙 الوضع الداكن';
                 localStorage.setItem('theme_preference', 'dark');
+            } else {
+                htmlEl.classList.remove('dark-mode');
+                localStorage.setItem('theme_preference', 'light');
             }
             refreshStats();
         }
@@ -450,14 +491,17 @@
         window.onload = () => {
             const savedTheme = localStorage.getItem('theme_preference');
             const htmlEl = document.documentElement;
-            const btn = document.getElementById('themeBtn');
+            const checkbox = document.getElementById('themeCheckbox');
+            
+            // جعل الوضع الداكن هو الافتراضي لو لم يختر المستخدم
             if (savedTheme === 'light') {
                 htmlEl.classList.remove('dark-mode');
-                if(btn) btn.innerHTML = '☀️ الوضع العادي';
+                if(checkbox) checkbox.checked = false;
             } else {
                 htmlEl.classList.add('dark-mode');
-                if(btn) btn.innerHTML = '🌙 الوضع الداكن';
+                if(checkbox) checkbox.checked = true;
             }
+            
             const dateInput = document.getElementById('observationDate');
             if(dateInput) dateInput.valueAsDate = new Date();
             refreshStats();
