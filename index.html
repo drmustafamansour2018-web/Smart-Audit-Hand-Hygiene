@@ -49,7 +49,7 @@
             position: fixed;
             top: 20px;
             left: 50%;
-            transform: translateX(-50%) translateY(-100px);
+            transform: translateX(-50%) translateY(-150px);
             background: var(--success);
             color: white;
             padding: 15px 40px;
@@ -57,9 +57,14 @@
             font-weight: 800;
             box-shadow: 0 10px 20px rgba(0,0,0,0.2);
             z-index: 9999;
-            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        #toast.show { transform: translateX(-50%) translateY(0); }
+        #toast.show { 
+            transform: translateX(-50%) translateY(0); 
+            opacity: 1;
+        }
 
         .sidebar {
             width: 260px;
@@ -100,7 +105,7 @@
                 box-sizing: border-box;
             }
             .sidebar h2, .sidebar div:last-child {
-                display: none; /* إخفاء اللوجو والحقوق في الموبايل لتوفير مساحة */
+                display: none; 
             }
             .nav-item {
                 margin-bottom: 0 !important;
@@ -110,7 +115,7 @@
                 font-size: 0.9rem;
             }
             .main-content {
-                padding: 15px 15px 80px 15px; /* إعطاء مساحة سفلية حتى لا يختفي المحتوى تحت الشريط */
+                padding: 15px 15px 80px 15px; 
             }
         }
 
@@ -519,8 +524,9 @@
                 rate = total > 0 ? Math.round((compRecords.length / total) * 100) : 0;
             }
 
-            const overallTotal = 2036; 
-            const overallRate = 60;
+            const overallTotal = 2036 + db.length; 
+            const totalCompliantFromDb = db.filter(d => d.comp === 1).length;
+            const overallRate = Math.round(((1221 + totalCompliantFromDb) / overallTotal) * 100) || 60;
             
             document.getElementById('overallTotalRate').innerText = `${overallRate}%`;
             document.getElementById('overallTotalCount').innerText = overallTotal;
@@ -755,7 +761,11 @@
             const t = document.getElementById('toast');
             t.innerText = msg;
             t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3000);
+            
+            // إخفاء الـ Toast تماماً بعد 3 ثوانٍ وتصفير الحالة
+            setTimeout(() => {
+                t.classList.remove('show');
+            }, 3000);
         }
 
         function submitData() {
@@ -766,18 +776,28 @@
             draft.date = document.getElementById('observationDate').value;
 
             if(!draft.hospital || !draft.auditor || !draft.dept || !draft.moment || !draft.staff || draft.comp === null || !draft.date) {
-                alert("برجاء إدخال كافة البيانات المطلوبة");
+                alert("برجاء إدخال كافة البيانات المطلوبة قبل الحفظ");
                 return;
             }
 
+            // إضافة البيانات للمصفوفة والـ LocalStorage بشكل آمن وصحيح أولاً
             db.push({...draft});
             localStorage.setItem('ic_pro_db', JSON.stringify(db));
+            
+            // إظهار التنبيه التلقائي بالاختفاء
             showToast("تم تسجيل المشاهدة بنجاح");
             
+            // تحديث الإحصائيات في نفس الوقت
+            refreshStats();
+            
+            // تصفير واجهة النموذج تماماً وإعدادها للمشاهدة التالية
             document.getElementById('momentInput').value = '';
             document.getElementById('staffNameInput').value = '';
-            document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
-            draft.dept = ''; draft.staff = ''; draft.comp = null; draft.moment = '';
+            document.querySelectorAll('#view-audit .option-btn').forEach(b => b.classList.remove('active'));
+            
+            // تفريغ المسودة بأمان بعد التأكد من الحفظ
+            draft = { dept: '', staff: '', comp: null, moment: '', hospital: draft.hospital, auditor: draft.auditor, staffName: '', date: draft.date };
+            
             document.getElementById('subCategoryArea').style.display = 'none';
             document.getElementById('clinicInputArea').style.display = 'none';
             document.getElementById('customClinicName').value = '';
