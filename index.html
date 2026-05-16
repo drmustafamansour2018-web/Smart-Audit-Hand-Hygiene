@@ -374,7 +374,7 @@
                     </div>
                 </div>
                 <div class="kpi-card">
-                    <h4>نسبة الالتزام الشهيرية</h4>
+                    <h4>نسبة الالتزام الشهرية</h4>
                     <div class="val" id="rateVal">0%</div>
                     <span id="rateStatus" style="font-size: 0.85rem; font-weight: 800;">---</span>
                 </div>
@@ -667,11 +667,12 @@
             const isCurrentMonth = currentMonthIdx === REAL_TODAY.getMonth() && currentYear === REAL_TODAY.getFullYear();
             if (isCurrentMonth) nextBtn.classList.add('hidden'); else nextBtn.classList.remove('hidden');
 
+            // تعديل البيانات الثابتة لتبدأ فقط من شهر فبراير 2026 (تصفير شهر يناير تماماً)
             const staticMonthlyData = {
-                1: { total: 580, compliant: 320 }, 
-                2: { total: 610, compliant: 360 }, 
-                3: { total: 596, compliant: 390 }, 
-                4: { total: 250, compliant: 152 }  
+                1: { total: 410, compliant: 291 }, // فبراير: 410 مشاهدة بنسبة 71%
+                2: { total: 490, compliant: 431 }, // مارس: 490 مشاهدة بنسبة 88%
+                3: { total: 406, compliant: 268 }, // أبريل: 406 مشاهدة بنسبة 66%
+                4: { total: 142, compliant: 128 }  // مايو: 142 مشاهدة بنسبة 90%
             };
 
             const filteredDB = db.filter(item => {
@@ -694,8 +695,9 @@
             let rate = total > 0 ? Math.round((compliantCount / total) * 100) : 0;
 
             let allDbCompliant = db.filter(d => d.comp === 1).length;
-            const overallTotal = 2036 + db.length; 
-            const overallRate = Math.round(((1222 + allDbCompliant) / overallTotal) * 100) || 60;
+            // إجمالي المشاهدات الكلية التراكمية الثابتة هو 2023 مشاهدة
+            const overallTotal = 2023 + db.length; 
+            const overallRate = Math.round(((1214 + allDbCompliant) / overallTotal) * 100) || 60;
             
             document.getElementById('overallTotalRate').innerText = `${overallRate}%`;
             document.getElementById('overallTotalCount').innerText = overallTotal;
@@ -713,18 +715,32 @@
             });
 
             if (filteredDB.length === 0 && baseTotal > 0) {
-                document.getElementById('worstStaff').innerText = "التمريض";
-                if (currentMonthIdx === 1) document.getElementById('worstDept').innerText = "استقبل الطوارئ";
-                else if (currentMonthIdx === 2) document.getElementById('worstDept').innerText = "قسم العظام";
-                else if (currentMonthIdx === 3) document.getElementById('worstDept').innerText = "قسم العظام";
-                else if (currentMonthIdx === 4) document.getElementById('worstDept').innerText = "قسم الجراحة العامة";
-                else document.getElementById('worstDept').innerText = "قسم العظام";
-                document.getElementById('worstMomentLabel').innerText = "قبل ملامسة المريض";
+                if (currentMonthIdx === 1) { // فبراير
+                    document.getElementById('worstStaff').innerText = "فني";
+                    document.getElementById('worstDept').innerText = "استقبل الطوارئ";
+                    document.getElementById('worstMomentLabel').innerText = "بعد بيئة المريض";
+                } else if (currentMonthIdx === 2) { // مارس
+                    document.getElementById('worstStaff').innerText = "التمريض";
+                    document.getElementById('worstDept').innerText = "قسم العظام";
+                    document.getElementById('worstMomentLabel').innerText = "قبل الإجراءات النظيفة";
+                } else if (currentMonthIdx === 3) { // أبريل
+                    document.getElementById('worstStaff').innerText = "التمريض";
+                    document.getElementById('worstDept').innerText = "قسم العظام";
+                    document.getElementById('worstMomentLabel').innerText = "بعد ملامسة المريض";
+                } else if (currentMonthIdx === 4) { // مايو
+                    document.getElementById('worstStaff').innerText = "التمريض";
+                    document.getElementById('worstDept').innerText = "قسم الجراحة العامة";
+                    document.getElementById('worstMomentLabel').innerText = "بعد ملامسة المريض";
+                } else {
+                    document.getElementById('worstStaff').innerText = "التمريض";
+                    document.getElementById('worstDept').innerText = "قسم العظام";
+                    document.getElementById('worstMomentLabel').innerText = "قبل ملامسة المريض";
+                }
             } else {
-                document.getElementById('worstStaff').innerText = Object.keys(staffViolations).length > 0 ? Object.keys(staffViolations).reduce((a, b) => staffViolations[a] > staffViolations[b] ? a : b) : "التمريض";
-                document.getElementById('worstDept').innerText = Object.keys(deptViolations).length > 0 ? Object.keys(deptViolations).reduce((a, b) => deptViolations[a] > deptViolations[b] ? a : b) : "قسم العظام";
+                document.getElementById('worstStaff').innerText = Object.keys(staffViolations).length > 0 ? Object.keys(staffViolations).reduce((a, b) => staffViolations[a] > staffViolations[b] ? a : b) : (currentMonthIdx === 1 ? "فني" : "التمريض");
+                document.getElementById('worstDept').innerText = Object.keys(deptViolations).length > 0 ? Object.keys(deptViolations).reduce((a, b) => deptViolations[a] > deptViolations[b] ? a : b) : (currentMonthIdx === 1 ? "استقبل الطوارئ" : (currentMonthIdx === 4 ? "قسم الجراحة العامة" : "قسم العظام"));
                 
-                let worstM = "قبل ملامسة المريض";
+                let worstM = currentMonthIdx === 1 ? "بعد بيئة المريض" : (currentMonthIdx === 2 ? "قبل الإجراءات النظيفة" : (currentMonthIdx === 3 || currentMonthIdx === 4 ? "بعد ملامسة المريض" : "قبل ملامسة المريض"));
                 const worstMomentKey = Object.keys(momentViolations).length > 0 ? Object.keys(momentViolations).reduce((a, b) => momentViolations[a] > momentViolations[b] ? a : b) : null;
                 if(worstMomentKey) worstM = momentNames[worstMomentKey] || worstMomentKey;
                 document.getElementById('worstMomentLabel').innerText = worstM;
@@ -735,10 +751,10 @@
             document.getElementById('rateVal').innerText = `${rate}%`;
             
             const status = document.getElementById('rateStatus');
-            if(rate >= 90) { status.innerText = "ممتاز"; status.style.color = "var(--success)"; }
+            if(total === 0) { status.innerText = "لا يوجد بيانات"; status.style.color = "var(--text-light)"; }
+            else if(rate >= 90) { status.innerText = "ممتاز"; status.style.color = "var(--success)"; }
             else if(rate >= 75) { status.innerText = "جيد"; status.style.color = "var(--accent)"; }
-            else if(total > 0) { status.innerText = "يحتاج تحسين"; status.style.color = "var(--danger)"; }
-            else { status.innerText = "لا يوجد بيانات"; status.style.color = "var(--text-light)"; }
+            else { status.innerText = "يحتاج تحسين"; status.style.color = "var(--danger)"; }
 
             drawCharts(filteredDB, currentMonthIdx, (filteredDB.length === 0 && baseTotal > 0), total);
         }
@@ -776,12 +792,17 @@
                     }
                 });
             } else {
-                if(currentMonthIdx === 4 && totalRecords === 0) {
+                if(totalRecords === 0) {
                     deptRates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 } else {
                     deptRates = uniqueDepts.map(() => Math.floor(Math.random() * (76 - 48 + 1)) + 48);
-                    if(uniqueDepts.indexOf('قسم العظام') !== -1) deptRates[uniqueDepts.indexOf('قسم العظام')] = 42;
-                    if(uniqueDepts.indexOf('استقبل الطوارئ') !== -1) deptRates[uniqueDepts.indexOf('استقبل الطوارئ')] = 46;
+                    if(currentMonthIdx === 1) { // فبراير
+                        if(uniqueDepts.indexOf('استقبل الطوارئ') !== -1) deptRates[uniqueDepts.indexOf('استقبل الطوارئ')] = 41;
+                    } else if(currentMonthIdx === 2 || currentMonthIdx === 3) { // مارس وأبريل
+                        if(uniqueDepts.indexOf('قسم العظام') !== -1) deptRates[uniqueDepts.indexOf('قسم العظام')] = 42;
+                    } else if(currentMonthIdx === 4) { // مايو
+                        if(uniqueDepts.indexOf('قسم الجراحة العامة') !== -1) deptRates[uniqueDepts.indexOf('قسم الجراحة العامة')] = 45;
+                    }
                 }
             }
 
@@ -793,7 +814,7 @@
                     datasets: [{
                         label: 'نسبة الالتزام %',
                         data: deptRates,
-                        backgroundColor: deptRates.map(v => v >= 75 ? 'rgba(16, 185, 129, 0.85)' : (v >= 60 ? 'rgba(59, 130, 246, 0.85)' : 'rgba(239, 68, 68, 0.85)')),
+                        backgroundColor: deptRates.map(v => v === 0 ? 'rgba(0,0,0,0.1)' : (v >= 90 ? 'rgba(16, 185, 129, 0.85)' : (v >= 75 ? 'rgba(59, 130, 246, 0.85)' : 'rgba(239, 68, 68, 0.85)'))),
                         borderRadius: 6
                     }]
                 },
@@ -809,7 +830,7 @@
                             align: 'start',
                             offset: 5,
                             font: { weight: 'bold', family: 'Cairo' },
-                            formatter: (v) => totalRecords > 0 || !showDefaults ? v + '%' : ''
+                            formatter: (v) => totalRecords > 0 ? v + '%' : ''
                         }
                     },
                     scales: {
@@ -829,7 +850,7 @@
                 if(totalL > 0) {
                     staffCounts = [Math.round((docL/totalL)*100), Math.round((nurL/totalL)*100), Math.round((techL/totalL)*100), Math.round((wrkL/totalL)*100)];
                 }
-            } else if (currentMonthIdx === 4 && totalRecords === 0) {
+            } else if (totalRecords === 0) {
                 staffCounts = [0, 0, 0, 0];
             }
 
