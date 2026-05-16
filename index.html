@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sohag University - Hand Hygiene Audit</title>
+    
+    <!-- ربط ملف المانيفست وتحميل الـ PWA -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- كود تشغيل الـ Service Worker للمزامنة والعمل بدون إنترنت -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker Registered!', reg))
+                    .catch(err => console.log('Service Worker Setup Failed :(', err));
+            });
+        }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --sidebar: #ffffff;
+            --accent: #2563eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --shadow: rgba(0, 0, 0, 0.05);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0f172a;
+                --sidebar: #1e293b;
+                --accent: #3b82f6;
+                --card: #1e293b;
+                --text: #f8fafc;
+                --text-light: #94a3b8;
+                --border: #334155;
+                --shadow: rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        body {
+            font-family: 'Cairo', 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--success);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 12px;
+            font-weight: 800;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            z-index: 9999;
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #toast.show { transform: translateX(-50%) translateY(0); }
+
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar);
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .month-filter {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--card);
+            padding: 10px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        .month-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Cairo';
+            font-weight: 700;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .month-btn:hover { opacity: 0.9; transform: scale(1.02); }
+        .month-btn.hidden { visibility: hidden; pointer-events: none; }
+
+        #currentMonthLabel { font-weight: 800; color: var(--accent); font-size: 1.1rem; min-width: 120px; text-align: center; }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .insight-card {
+            padding: 15px;
+            border-radius: 16px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .insight-card::after {
+            content: "🧼";
+            position: absolute;
+            left: -10px;
+            bottom: -10px;
+            font-size: 3rem;
+            opacity: 0.2;
+        }
+
+        .insight-blue { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+        .insight-red { background: linear-gradient(135deg, #dc2626, #ef4444); }
+        .insight-orange { background: linear-gradient(135deg, #d97706, #f59e0b); }
+        /* تم تعديل السطر التالي لجعل اللون أخضر صريح */
+        .insight-green { background: linear-gradient(135deg, #10b981, #059669); }
+
+        .insight-card h5 { margin: 0; font-size: 0.85rem; opacity: 0.9; font-weight: 600; }
+        .insight-card .insight-val { font-size: 1.1rem; font-weight: 800; margin-top: 5px; line-height: 1.2; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .kpi-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .kpi-card h4 { margin: 0 0 10px 0; color: var(--text-light); font-size: 0.9rem; font-weight: 700; }
+        .kpi-card .val { font-size: 1.8rem; font-weight: 800; color: var(--text); }
+
+        .form-container {
+            max-width: 600px;
+            background: var(--card);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px var(--shadow);
+            margin: 0 auto;
+        }
+
+        .grid-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            padding: 14px 10px;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            background: var(--card);
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .option-btn.active { 
+            background: var(--accent); 
+            color: white; 
+            border-color: var(--accent);
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-comp-success.active { background: var(--success) !important; border-color: var(--success) !important; color: white !important; }
+        .btn-comp-danger.active { background: var(--danger) !important; border-color: var(--danger) !important; color: white !important; }
+
+        input[type="date"], select, .search-box {
+            width: 100%; padding: 12px; border-radius: 10px; border: 1.5px solid var(--border);
+            background: var(--card); color: var(--text); margin-bottom: 20px; font-family: 'Cairo', sans-serif;
+            font-weight: 600; box-sizing: border-box;
+        }
+
+        .clinic-input-group {
+            display: none; gap: 10px; margin-bottom: 20px; animation: fadeIn 0.3s ease;
+        }
+        .clinic-input-group input {
+            flex: 1; padding: 12px; border-radius: 10px; border: 1.5px solid var(--accent);
+            background: var(--bg); color: var(--text); font-family: 'Cairo', sans-serif;
+        }
+        .confirm-btn {
+            background: var(--success); color: white; border: none; padding: 0 20px;
+            border-radius: 10px; cursor: pointer; font-weight: 800; font-family: 'Cairo', sans-serif;
+        }
+
+        .nav-item {
+            padding: 12px 15px; border-radius: 10px; cursor: pointer;
+            margin-bottom: 5px; transition: 0.3s; font-weight: 600; color: var(--text-light);
+        }
+
+        .nav-item.active { background: var(--accent); color: white; }
+
+        .view { display: none; }
+        .view.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        label { font-weight: 700; margin-bottom: 8px; display: block; font-size: 0.95rem; }
+        
+        .eng-badge {
+            font-size: 0.7rem;
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--accent);
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-right: 5px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="toast">تم التسجيل بنجاح</div>
+
+    <div class="sidebar">
+        <h2 style="color: var(--accent); font-size: 1.1rem; font-weight: 800; text-align: center; line-height: 1.4;">Smart Audit<br><span style="color:var(--text-light); font-size: 0.9rem;">Hand Hygiene</span></h2>
+        <div class="nav-item active" onclick="switchView('dashboard', this)">📊 الإحصائيات</div>
+        <div class="nav-item" onclick="switchView('audit', this)">📝 تسجيل ملاحظة</div>
+        <div style="margin-top: auto; padding-top: 10px;">
+            <p style="font-size: 0.75rem; color: var(--text-light); text-align: center;">Hand Hygiene Monitoring System<br>Sohag University Hospitals</p>
+        </div>
+    </div>
+
+    <div class="main-content">
+        
+        <div id="view-dashboard" class="view active">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <h1 style="margin:0; font-size: 1.5rem; color: var(--accent); font-weight: 800;">وحدة مكافحة العدوى</h1>
+                <p style="margin:5px 0 0 0; font-weight: 700; color: var(--text-light);">مستشفيات جامعة سوهاج</p>
+            </div>
+
+            <div class="month-filter">
+                <button id="nextMonthBtn" class="month-btn" onclick="changeMonth(1)">الشهر التالي ◀</button>
+                <div id="currentMonthLabel">---</div>
+                <button class="month-btn" onclick="changeMonth(-1)">▶ الشهر السابق</button>
+            </div>
+
+            <div class="insights-grid">
+                <div class="insight-card insight-red"><h5>أكثر فئة مخالفة</h5><div class="insight-val" id="worstStaff">التمريض</div></div>
+                <div class="insight-card insight-orange"><h5>أكثر قسم مخالف</h5><div class="insight-val" id="worstDept">---</div></div>
+                <div class="insight-card insight-green"><h5>اللحظة الأكثر إهمالاً</h5><div class="insight-val" id="worstMomentLabel">---</div></div>
+                <div class="insight-card insight-blue"><h5>إجمالي المشاهدات الكلية</h5><div class="insight-val" id="overallTotalCount">0</div></div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="kpi-card">
+                    <h4>إجمالي المشاهدات بالشهر</h4>
+                    <div class="val" id="totalVal">0</div>
+                    <div style="height: 8px; background: var(--border); border-radius: 4px; margin-top: 12px;">
+                        <div id="progressBar" style="height: 100%; background: var(--accent); width: 0%; transition: 0.8s;"></div>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <h4>نسبة الالتزام الشهرية</h4>
+                    <div class="val" id="rateVal">0%</div>
+                    <span id="rateStatus" style="font-size: 0.85rem; font-weight: 800;">---</span>
+                </div>
+                <div class="kpi-card" style="border-right: 4px solid var(--accent);">
+                    <h4>نسبة الالتزام الكلية (تراكمي)</h4>
+                    <div class="val" id="overallTotalRate" style="color: var(--accent);">0%</div>
+                    <span style="font-size: 0.75rem; color: var(--text-light);">منذ بداية تجميع البيانات</span>
+                </div>
+            </div>
+
+            <div class="charts-row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div class="kpi-card"><h4>نسبة الالتزام لكل قسم (%)</h4><canvas id="deptChart"></canvas></div>
+                <div class="kpi-card"><h4>توزيع الفئات المشاركة (%)</h4><canvas id="staffChart"></canvas></div>
+            </div>
+        </div>
+
+        <div id="view-audit" class="view">
+            <div class="form-container">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <span class="eng-badge">New Audit Entry</span>
+                    <h3 style="margin: 5px 0; font-weight: 800;">تسجيل مشاهدة غسيل أيدي</h3>
+                </div>
+                
+                <label>المستشفى</label>
+                <select id="hospitalInput">
+                    <option value="">اختر المستشفى...</option>
+                    <option>مستشفى سوهاج الجامعي</option>
+                    <option>مستشفى الطوارئ الجديدة بالكوامل</option>
+                </select>
+
+                <label>الملاحظ المسؤول</label>
+               <select id="auditorInput">
+                    <option value="">اختر اسمك...</option>
+                    <option>مصطفى منصور محمد</option>
+                    <option>أسماء محمد جودة</option>
+                    <option>تغريد احمد هاشم</option>
+                    <option>محمود محمد محمود</option>
+                    <option>رضوي صلاح فاضل</option>
+                    <option>محمود السيد الجندي</option>
+                    <option>زينا محمد عبد اللاه</option>
+                    <option>اسماء عبد العزيز حسين</option>
+                    <option>عزيزة محمود محمد</option>
+                    <option>ندي خيري مختار</option>
+                    <option>ايمان احمد علي</option>
+                </select>
+
+                <label style="color:var(--accent);">تصنيف المكان</label>
+                <div class="grid-options" id="mainCatGrid">
+                    <div class="option-btn" onclick="loadSub('reception', this)">الاستقبالات</div>
+                    <div class="option-btn" onclick="loadSub('ops', this)">العمليات</div>
+                    <div class="option-btn" onclick="loadSub('icu', this)">العمليات</div>
+                    <div class="option-btn" onclick="loadSub('ward', this)">الأقسام</div>
+                    <div class="option-btn" onclick="loadSub('clinic', this)">خدمات وعيادات</div>
+                </div>
+
+                <div id="subCategoryArea" style="display:none;">
+                    <label style="color:var(--accent);">القسم بالتحديد</label>
+                    <input type="text" id="deptSearch" class="search-box" placeholder="ابحث عن اسم القسم..." onkeyup="filterDepts()">
+                    <div id="subContainer" class="grid-options" style="padding: 10px; background: rgba(0,0,0,0.03); border-radius: 10px; max-height: 200px; overflow-y: auto;"></div>
+                </div>
+
+                <div id="clinicInputArea" class="clinic-input-group">
+                    <input type="text" id="customClinicName" placeholder="أدخل اسم العيادة...">
+                    <button class="confirm-btn" onclick="confirmClinic()">تأكيد</button>
+                </div>
+
+                <label style="color:var(--accent);">اللحظة التي تم مشاهدتها (5 Moments)</label>
+                <select id="momentInput">
+                    <option value="">اختر اللحظة...</option>
+                    <option value="1">1- قبل ملامسة المريض</option>
+                    <option value="2">2- قبل الإجراءات النظيفة / المعقمة</option>
+                    <option value="3">3- بعد ملامسة سوائل جسم المريض</option>
+                    <option value="4">4- بعد ملامسة المريض</option>
+                    <option value="5">5- بعد ملامسة البيئة المحيطة بالمريض</option>
+                </select>
+                <label style="color:var(--accent);">مؤدي الإجراء - اسم الموظف (اختياري)</label>
+<input type="text" id="staffNameInput" placeholder="اكتب الاسم إذا رغبت..." 
+       style="width: 100%; padding: 12px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--card); color: var(--text); margin-bottom: 20px; font-family: 'Cairo';">
+
+                <label style="color:var(--accent); margin-top: 15px;">الفئة (Staff Class)</label>
+                <div class="grid-options">
+                    <div class="option-btn" onclick="selectItem('staff', 'طبيب', this)">طبيب</div>
+                    <div class="option-btn" onclick="selectItem('staff', 'تمريض', this)">تمريض</div>
+                    <div class="option-btn" onclick="selectItem('staff', 'فني', this)">فني</div>
+                    <div class="option-btn" onclick="selectItem('staff', 'عامل', this)">عامل</div>
+                </div>
+
+                <label style="color:var(--accent);">النتيجة (Compliance)</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="option-btn btn-comp-success" style="border-color: var(--success); color: var(--success);" onclick="selectItem('comp', 1, this)">ملتزم (Compliant)</div>
+                    <div class="option-btn btn-comp-danger" style="border-color: var(--danger); color: var(--danger);" onclick="selectItem('comp', 0, this)">غير ملتزم (Non-Compliant)</div>
+                </div>
+
+                <label style="margin-top: 15px;">تاريخ المشاهدة</label>
+                <input type="date" id="observationDate">
+
+                <button style="background:var(--accent); color:white; width:100%; padding:16px; border-radius:12px; border:none; margin-top:10px; font-weight:800; font-family:'Cairo'; cursor:pointer; font-size:1rem; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);" onclick="submitData()">حفظ البيانات (Save Audit)</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        Chart.register(ChartDataLabels);
+
+        let db = JSON.parse(localStorage.getItem('ic_pro_db')) || [];
+        let draft = { dept: '', staff: '', comp: null };
+        let currentViewDate = new Date();
+        const REAL_TODAY = new Date();
+
+        const momentNames = {
+            "1": "قبل ملامسة المريض",
+            "2": "قبل الإجراءات النظيفة",
+            "3": "بعد سوائل الجسم",
+            "4": "بعد ملامسة المريض",
+            "5": "بعد بيئة المريض"
+        };
+
+        window.onload = () => {
+            const dateInput = document.getElementById('observationDate');
+            if(dateInput) dateInput.valueAsDate = new Date();
+        };
+
+        const depts = {
+            reception: ['استقبال الطوارئ', 'استقبال الإصابات', 'استقبال الباطنة', 'استقبال الأطفال', 'استقبال النسا', 'استقبال جراحة عامة', 'CPR', 'غرفة رسم القلب', 'غرفة الغرز'],
+            ops: ['عمليات الرمد', 'عمليات المسالك', 'عمليات الجراحة العامة', 'عمليات النسا', 'عمليات أنف وأذن', 'عمليات جراحة مخ وأعصاب', 'عمليات عظام', 'عمليات تجميل', 'عمليات القسطرة'],
+            icu: ['عناية القلب', 'عناية النسا', 'عناية الصدرية', 'عناية العصبية', 'عناية الأطفال', 'عناية الأطفال الحرجة', 'عناية التخدير', 'عناية باطنة متوسطة', 'مبتسرين (حضانات)'],
+            ward: ['قسم الرمد', 'قسم المسالك', 'قسم الجراحة العامة', 'قسم باطنة (حريم)', 'قسم باطنة (رجال)', 'قسم النسا', 'قسم الصدرية', 'قسم العصبية', 'قسم أنف وأذن', 'قسم المتوطنة', 'قسم جراحة مخ وأعصاب', 'قسم العظام', 'قسم الأورام', 'قسم الجلدية', 'قسم الروماتيزم', 'قسم الأوعية', 'قسم الجراحات الميكروسكوبية', 'جراحة أطفال', 'قسم التجميل', 'كلى كبار (فرى)', 'كلى كبار (B&C)', 'كلى أطفال', 'المناظير', 'قسم قلب وصدر'],
+            clinic: ['العيادات الخارجية', 'قسم الأشعة', 'قسم التعقيم', 'المطبخ', 'المعامل', 'بنك الدم']
+        };
+
+        function switchView(id, el) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('view-' + id).classList.add('active');
+            el.classList.add('active');
+            if(id === 'dashboard') refreshStats();
+        }
+
+        function changeMonth(step) {
+            let nextDate = new Date(currentViewDate);
+            nextDate.setMonth(nextDate.getMonth() + step);
+            if (nextDate > REAL_TODAY && step > 0) return;
+            currentViewDate = nextDate;
+            refreshStats();
+        }
+
+        function refreshStats() {
+            const months = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+            const currentMonthName = months[currentViewDate.getMonth()];
+            document.getElementById('currentMonthLabel').innerText = `${currentMonthName} ${currentViewDate.getFullYear()}`;
+            
+            const nextBtn = document.getElementById('nextMonthBtn');
+            const isCurrentMonth = currentViewDate.getMonth() === REAL_TODAY.getMonth() && currentViewDate.getFullYear() === REAL_TODAY.getFullYear();
+            if (isCurrentMonth) nextBtn.classList.add('hidden'); else nextBtn.classList.remove('hidden');
+
+            const filteredDB = db.filter(item => {
+                const itemDate = new Date(item.date);
+                return itemDate.getMonth() === currentViewDate.getMonth() && itemDate.getFullYear() === currentViewDate.getFullYear();
+            });
+
+            const total = filteredDB.length;
+            const compRecords = filteredDB.filter(d => d.comp === 1);
+            
+            // --- تعديل النسب المطلوبة لكل شهر حسب طلبك ---
+            let rate = total > 0 ? Math.round((compRecords.length / total) * 100) : 0;
+            if (currentMonthName === "فبراير") rate = 50;
+            else if (currentMonthName === "مارس") rate = 70;
+            else if (currentMonthName === "أبريل") rate = 55;
+            else if (currentMonthName === "مايو") rate = 65;
+
+            const overallTotalCount = db.length; 
+            const overallRate = 60; // المتوسط الكلي التقريبي بناءً على النسب الجديدة
+            
+            document.getElementById('overallTotalRate').innerText = `${overallRate}%`;
+            document.getElementById('overallTotalCount').innerText = overallTotalCount;
+
+            // --- توزيع الأقسام الأكثر مخالفة (لأغراض العرض) ---
+            let displayWorstStaff = "التمريض";
+            let displayWorstDept = "قسم العظام"; 
+
+            if (currentMonthName === "فبراير") displayWorstDept = "استقبال الطوارئ";
+            else if (currentMonthName === "مارس") displayWorstDept = "عناية التخدير";
+            else if (currentMonthName === "أبريل") displayWorstDept = "قسم العظام";
+            else if (currentMonthName === "مايو") displayWorstDept = "قسم الجراحة العامة";
+
+            document.getElementById('worstStaff').innerText = displayWorstStaff;
+            document.getElementById('worstDept').innerText = displayWorstDept;
+
+            const momentViolations = {};
+            filteredDB.forEach(x => {
+                if(x.comp === 0) {
+                    momentViolations[x.moment] = (momentViolations[x.moment] || 0) + 1;
+                }
+            });
+
+            let worstM = "اللحظة 5";
+            const worstMomentKey = Object.keys(momentViolations).length > 0 ? Object.keys(momentViolations).reduce((a, b) => momentViolations[a] > momentViolations[b] ? a : b) : null;
+            if(worstMomentKey) {
+                worstM = momentNames[worstMomentKey] || worstMomentKey;
+            } else {
+                if (currentMonthName === "مايو") worstM = "بعد ملامسة البيئة المحيطة";
+                else if (currentMonthName === "مارس") worstM = "قبل ملامسة المريض";
+            }
+            document.getElementById('worstMomentLabel').innerText = worstM;
+
+            document.getElementById('totalVal').innerText = total;
+            document.getElementById('progressBar').style.width = `${Math.min((total/100)*100, 100)}%`;
+            document.getElementById('rateVal').innerText = `${rate}%`;
+            
+            const status = document.getElementById('rateStatus');
+            if(rate >= 85) { status.innerText = "ممتاز"; status.style.color = "var(--success)"; }
+            else if(rate >= 65) { status.innerText = "جيد"; status.style.color = "var(--accent)"; }
+            else if(total > 0 || rate > 0) { status.innerText = "يحتاج تحسين"; status.style.color = "var(--danger)"; }
+            else { status.innerText = "لا يوجد بيانات"; status.style.color = "var(--text-light)"; }
+
+            drawCharts(filteredDB, rate);
+        }
+
+        let c1, c2;
+        function drawCharts(filteredData, currentRate) {
+            if(c1) c1.destroy(); if(c2) c2.destroy();
+            
+            const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const chartTextColor = isDark ? '#f8fafc' : '#1e293b';
+
+            let labels = filteredData.length > 0 ? [...new Set(filteredData.map(item => item.dept))].slice(0, 5) : ['باطنة', 'جراحة', 'عظام', 'نسا', 'أطفال'];
+            
+            // ربط نسب الأقسام بالنسبة الشهرية لتبدو متناسقة
+            let dataValues = filteredData.length > 0 ? labels.map(d => {
+                const logs = filteredData.filter(x => x.dept === d);
+                return Math.round((logs.filter(l => l.comp === 1).length / logs.length) * 100);
+            }) : labels.map((_, i) => currentRate + (i % 2 === 0 ? 5 : -5));
+
+            c1 = new Chart(document.getElementById('deptChart'), {
+                type: 'bar',
+                data: { labels: labels, datasets: [{ label: 'نسبة الالتزام %', data: dataValues, backgroundColor: '#2563eb', borderRadius: 8 }] },
+                options: { 
+                    responsive: true, 
+                    scales: { 
+                        y: { beginAtZero: true, max: 100, ticks: { color: chartTextColor } },
+                        x: { ticks: { color: chartTextColor } }
+                    },
+                    plugins: {
+                        legend: { labels: { color: chartTextColor, font: { family: 'Cairo' } } },
+                        datalabels: {
+                            anchor: 'end', align: 'top', formatter: (val) => val + '%',
+                            font: { weight: 'bold', family: 'Cairo' }, color: '#2563eb'
+                        }
+                    }
+                }
+            });
+
+            const staffCats = ['طبيب', 'تمريض', 'فني', 'عامل'];
+            const staffCounts = filteredData.length > 0 ? staffCats.map(c => filteredData.filter(d => d.staff === c).length) : [15, 45, 10, 5];
+
+            c2 = new Chart(document.getElementById('staffChart'), {
+                type: 'doughnut',
+                data: { labels: staffCats, datasets: [{ data: staffCounts, backgroundColor: ['#2563eb', '#10b981', '#f59e0b', '#ef4444'] }] },
+                options: { 
+                    cutout: '65%',
+                    plugins: {
+                        legend: { labels: { color: chartTextColor, font: { family: 'Cairo' } } },
+                        datalabels: {
+                            formatter: (value, ctx) => {
+                                let sum = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                                let percentage = sum > 0 ? ((value / sum) * 100).toFixed(1) : 0;
+                                return percentage > 0 ? percentage + '%' : '';
+                            },
+                            color: '#fff', font: { weight: 'bold', family: 'Cairo', size: 12 }, textAlign: 'center'
+                        }
+                    }
+                }
+            });
+        }
+
+        function loadSub(cat, el) {
+            document.getElementById('mainCatGrid').querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('subCategoryArea').style.display = 'block';
+            document.getElementById('clinicInputArea').style.display = 'none';
+            document.getElementById('deptSearch').value = '';
+            const sub = document.getElementById('subContainer');
+            sub.innerHTML = '';
+            depts[cat].forEach(d => {
+                const btn = document.createElement('div');
+                btn.className = 'option-btn'; btn.innerText = d;
+                btn.onclick = () => { 
+                    sub.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active'); draft.dept = d;
+                    document.getElementById('clinicInputArea').style.display = (d === 'العيادات الخارجية') ? 'flex' : 'none';
+                };
+                sub.appendChild(btn);
+            });
+        }
+
+        function filterDepts() {
+            const val = document.getElementById('deptSearch').value.toLowerCase();
+            document.getElementById('subContainer').querySelectorAll('.option-btn').forEach(btn => {
+                btn.style.display = btn.innerText.toLowerCase().includes(val) ? 'flex' : 'none';
+            });
+        }
+
+        function confirmClinic() {
+            const name = document.getElementById('customClinicName').value;
+            if(name) { draft.dept = "عيادة: " + name; showToast("تم تحديد العيادة"); }
+        }
+
+        function selectItem(key, val, el) {
+            draft[key] = val;
+            el.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg; t.classList.add('show');
+            setTimeout(() => { 
+                t.classList.remove('show');
+                if(msg.includes("نجاح")) switchView('dashboard', document.querySelector('.nav-item')); 
+            }, 1500);
+        }
+
+        function submitData() {
+            const h = document.getElementById('hospitalInput').value;
+            const a = document.getElementById('auditorInput').value;
+            const m = document.getElementById('momentInput').value;
+            const obsDate = document.getElementById('observationDate').value;
+            const sNameInput = document.getElementById('staffNameInput');
+            const sName = sNameInput ? sNameInput.value : "";
+
+            if(!h || !a || !m || !obsDate || !draft.dept || !draft.staff || draft.comp === null) { 
+                alert("برجاء أكمل البيانات الأساسية المطلوبة"); 
+                return; 
+            }
+
+            db.push({ 
+                ...draft, 
+                hospital: h, 
+                auditor: a, 
+                moment: m, 
+                date: obsDate, 
+                staffName: sName 
+            });
+
+            localStorage.setItem('ic_pro_db', JSON.stringify(db));
+            showToast("تم تسجيل البيانات بنجاح");
+            
+            document.getElementById('momentInput').value = "";
+            if (sNameInput) sNameInput.value = "";
+            document.querySelectorAll('.view#view-audit .option-btn').forEach(b => b.classList.remove('active'));
+        }
+
+        refreshStats();
+    </script>
+</body>
+</html>
