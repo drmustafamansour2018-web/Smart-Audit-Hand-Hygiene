@@ -9,9 +9,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <style>
         :root {
-            --bg: #f0f7ff; /* لون مائي فاتح ونظيف */
+            --bg: #f0f7ff; 
             --sidebar: #ffffff;
-            --accent: #0284c7; /* أزرق سماوي صابوني */
+            --accent: #0284c7; 
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
@@ -24,7 +24,7 @@
         }
 
         html.dark-mode {
-            --bg: #0b1329; /* أزرق ليلي عميق */
+            --bg: #0b1329; 
             --sidebar: #111b35;
             --accent: #38bdf8;
             --card: #111b35;
@@ -47,7 +47,6 @@
             position: relative;
         }
 
-        /* خلفية الفقاعات والرغوة التجميلية */
         body::before {
             content: "🫧";
             position: fixed;
@@ -80,7 +79,7 @@
             background: var(--success);
             color: white;
             padding: 15px 40px;
-            border-radius: 30px; /* رغوي دائري */
+            border-radius: 30px; 
             font-weight: 800;
             box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
             z-index: 9999;
@@ -129,7 +128,6 @@
             gap: 10px;
         }
 
-        /* تصميم مفتاح التبديل (Switch Toggle) */
         .theme-switch-wrapper {
             display: flex;
             align-items: center;
@@ -170,7 +168,7 @@
 
         .slider:before {
             position: absolute;
-            content: "🧼"; /* صابونة تتحرك بداخل السويتش */
+            content: "🧼"; 
             font-size: 0.9rem;
             display: flex;
             align-items: center;
@@ -188,7 +186,6 @@
         input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(22px); content: "🫧"; }
 
-        /* شريط تقدم فقاعي متصاعد */
         .foam-progress-container {
             height: 14px;
             background: var(--border);
@@ -223,7 +220,6 @@
             100% { transform: translateX(-10px); }
         }
 
-        /* شاشات الموبايل */
         @media (max-width: 768px) {
             body { flex-direction: column; }
             .sidebar {
@@ -280,7 +276,7 @@
 
         .insight-card {
             padding: 18px;
-            border-radius: 24px; /* زوايا دائرية ناعمة مثل الرغوة */
+            border-radius: 24px; 
             color: white;
             display: flex;
             flex-direction: column;
@@ -290,7 +286,6 @@
             overflow: hidden;
         }
 
-        /* خلفية مائية للبطاقات */
         .insight-card::after {
             content: "🧼"; position: absolute; left: -10px; bottom: -10px; font-size: 3.5rem; opacity: 0.15;
         }
@@ -388,7 +383,6 @@
     <div class="sidebar">
         <h2 style="color: var(--accent); font-size: 1.15rem; font-weight: 800; text-align: center; line-height: 1.4; margin-bottom:20px;">🧼 Smart Audit<br><span style="color:var(--text-light); font-size: 0.85rem; font-weight:600;">غسيل الأيدي ونظافتها</span></h2>
         
-        <!-- السويتش الخاص بالكمبيوتر والشاشات الكبيرة -->
         <div class="theme-switch-wrapper" style="margin-bottom: 25px;">
             <span class="theme-switch-label">☀️ عادي</span>
             <label class="switch">
@@ -407,7 +401,6 @@
 
     <div class="main-content">
         
-        <!-- هيدر علوي مضاف حديثاً لضمان ظهور السويتش في الموبايل بوضوح -->
         <div class="app-header">
             <div class="header-title">
                 <span style="font-size: 1.8rem;">🧼</span>
@@ -417,7 +410,6 @@
                 </div>
             </div>
             
-            <!-- السويتش المخصص للموبايل -->
             <div class="theme-switch-wrapper">
                 <span class="theme-switch-label">☀️</span>
                 <label class="switch">
@@ -436,28 +428,27 @@
             </div>
 
             <div class="insights-grid">
-                <div class="insight-card insight-red"><h5>أكثر فئة مخالفة ⚠️</h5><div class="insight-val" id="worstStaff">---</div></div>
-                <div class="insight-card insight-orange"><h5>أكثر قسم مخالف 📍</h5><div class="insight-val" id="worstDept">---</div></div>
-                <div class="insight-card insight-green"><h5>اللحظة الأكثر إهمالاً ⏰</h5><div class="insight-val" id="worstMomentLabel">---</div></div>
-                <div class="insight-card insight-blue"><h5>إجمالي المشاهدات الكلية 💦</h5><div class="insight-val" id="overallTotalCount">2023</div></div>
+                <div class="insight-card insight-red"><h5>أكثر فئة مخالفة</h5><div class="insight-val" id="worstStaff">---</div></div>
+                <div class="insight-card insight-orange"><h5>أكثر قسم مخالف</h5><div class="insight-val" id="worstDept">---</div></div>
+                <div class="insight-card insight-green"><h5>اللحظة الأكثر إهمالاً</h5><div class="insight-val" id="worstMomentLabel">---</div></div>
+                <div class="insight-card insight-blue"><h5>إجمالي المشاهدات الكلية</h5><div class="insight-val" id="overallTotalCount">2023</div></div>
             </div>
 
             <div class="stats-grid">
                 <div class="kpi-card">
                     <h4>إجمالي المشاهدات بالشهر 🫧</h4>
                     <div class="val" id="totalVal">0</div>
-                    <!-- شريط التقدم الرغوي المتصاعد -->
                     <div class="foam-progress-container">
                         <div id="progressBar" class="foam-progress-bar"></div>
                     </div>
                 </div>
                 <div class="kpi-card">
-                    <h4>نسبة الالتزام الشهرية ✨</h4>
+                    <h4>نسبة الالتزام الشهرية</h4>
                     <div class="val" id="rateVal">0%</div>
                     <span id="rateStatus" style="font-size: 0.85rem; font-weight: 800;">---</span>
                 </div>
                 <div class="kpi-card" style="border-right: 4px solid var(--accent); background: linear-gradient(to left, var(--card), var(--foam-color));">
-                    <h4>نسبة الالتزام الكلية (تراكمي) 🎯</h4>
+                    <h4>نسبة الالتزام الكلية (تراكمي)</h4>
                     <div class="val" id="overallTotalRate" style="color: var(--accent);">60%</div>
                     <span style="font-size: 0.75rem; color: var(--text-light);">منذ بداية تجميع البيانات</span>
                 </div>
@@ -510,7 +501,7 @@
                 <div class="grid-options" id="mainCatGrid">
                     <div class="option-btn" onclick="loadSub('reception', this)">الاستقبالات</div>
                     <div class="option-btn" onclick="loadSub('ops', this)">العمليات</div>
-                    <div class="option-btn" onclick="loadSub('icu', this)">العنايات</div>
+                    <div class="option-btn" onclick="--">العنايات</div>
                     <div class="option-btn" onclick="loadSub('ward', this)">الأقسام</div>
                     <div class="option-btn" onclick="loadSub('clinic', this)">خدمات وعيادات</div>
                 </div>
@@ -565,10 +556,7 @@
 
     <script>
         Chart.register(ChartDataLabels);
-
-        localStorage.removeItem('ic_pro_db'); 
         let db = [];
-        
         let draft = { dept: '', staff: '', comp: null, moment: '', hospital: '', auditor: '', staffName: '', date: '' };
         let currentViewDate = new Date();
         const REAL_TODAY = new Date();
@@ -576,11 +564,7 @@
         function toggleTheme(triggerEl) {
             const htmlEl = document.documentElement;
             const isChecked = triggerEl.checked;
-            
-            document.querySelectorAll('.themeCheckbox').forEach(box => {
-                box.checked = isChecked;
-            });
-
+            document.querySelectorAll('.themeCheckbox').forEach(box => { box.checked = isChecked; });
             if (isChecked) {
                 htmlEl.classList.add('dark-mode');
                 localStorage.setItem('theme_preference', 'dark');
@@ -594,7 +578,6 @@
         window.onload = () => {
             const savedTheme = localStorage.getItem('theme_preference');
             const htmlEl = document.documentElement;
-            
             if (savedTheme === 'light') {
                 htmlEl.classList.remove('dark-mode');
                 document.querySelectorAll('.themeCheckbox').forEach(box => box.checked = false);
@@ -602,7 +585,6 @@
                 htmlEl.classList.add('dark-mode');
                 document.querySelectorAll('.themeCheckbox').forEach(box => box.checked = true);
             }
-            
             const dateInput = document.getElementById('observationDate');
             if(dateInput) dateInput.valueAsDate = new Date();
             refreshStats();
@@ -635,7 +617,6 @@
         function loadSub(cat, btn) {
             document.querySelectorAll('#mainCatGrid .option-btn').forEach(b => b.classList.remove('active'));
             if(btn) btn.classList.add('active');
-            
             const container = document.getElementById('subContainer');
             container.innerHTML = '';
             document.getElementById('deptSearch').value = '';
@@ -647,7 +628,6 @@
             } else {
                 document.getElementById('clinicInputArea').style.display = 'none';
                 document.getElementById('subCategoryArea').style.display = 'block';
-                
                 depts[cat].forEach(d => {
                     const dBtn = document.createElement('div');
                     dBtn.className = 'option-btn';
@@ -728,16 +708,15 @@
             const currentMonthIdx = currentViewDate.getMonth();
             
             document.getElementById('currentMonthLabel').innerText = `${months[currentMonthIdx]} ${currentYear}`;
-            
             const nextBtn = document.getElementById('nextMonthBtn');
             const isCurrentMonth = currentMonthIdx === REAL_TODAY.getMonth() && currentYear === REAL_TODAY.getFullYear();
             if (isCurrentMonth) nextBtn.classList.add('hidden'); else nextBtn.classList.remove('hidden');
 
             const staticConfig = {
-                1: { total: 410, rate: 71, status: "يحتاج تحسين 💧", worstStaff: "فني", worstDept: "استقبال الطوارئ", worstMoment: "بعد بيئة المريض" }, 
-                2: { total: 490, rate: 88, status: "جيد ✨", worstStaff: "التمريض", worstDept: "قسم العظام", worstMoment: "قبل الإجراءات النظيفة" }, 
-                3: { total: 406, rate: 66, status: "يحتاج تحسين 💧", worstStaff: "التمريض", worstDept: "قسم العظام", worstMoment: "بعد ملامسة المريض" }, 
-                4: { total: 142, rate: 90, status: "ممتاز 🧼", worstStaff: "التمريض", worstDept: "قسم الجراحة العامة", worstMoment: "بعد ملامسة المريض" } 
+                1: { total: 410, rate: 71, status: "يحتاج تحسين", worstStaff: "فني", worstDept: "استقبال الطوارئ", worstMoment: "بعد بيئة المريض" }, 
+                2: { total: 490, rate: 88, status: "جيد", worstStaff: "التمريض", worstDept: "قسم العظام", worstMoment: "قبل الإجراءات النظيفة" }, 
+                3: { total: 406, rate: 66, status: "يحتاج تحسين", worstStaff: "التمريض", worstDept: "قسم العظام", worstMoment: "بعد ملامسة المريض" }, 
+                4: { total: 142, rate: 90, status: "ممتاز", worstStaff: "التمريض", worstDept: "قسم الجراحة العامة", worstMoment: "بعد ملامسة المريض" } 
             };
 
             let total = 0;
@@ -774,7 +753,6 @@
 
             document.getElementById('overallTotalCount').innerText = 2023 + db.length;
             document.getElementById('overallTotalRate').innerText = `60%`;
-
             document.getElementById('progressBar').style.width = `${Math.min((total / 500) * 100, 100)}%`;
 
             drawCharts(currentMonthIdx, total);
@@ -783,7 +761,6 @@
         let c1, c2;
         function drawCharts(currentMonthIdx, totalRecords) {
             if(c1) c1.destroy(); if(c2) c2.destroy();
-
             const isDark = document.documentElement.classList.contains('dark-mode');
             const chartTextColor = isDark ? '#f8fafc' : '#1e293b';
 
@@ -839,7 +816,6 @@
             });
 
             let staffCounts = totalRecords > 0 ? [25, 45, 18, 12] : [0, 0, 0, 0];
-
             const ctx2 = document.getElementById('staffChart').getContext('2d');
             c2 = new Chart(ctx2, {
                 type: 'doughnut',
