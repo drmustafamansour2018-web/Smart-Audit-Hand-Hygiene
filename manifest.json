@@ -1,18 +1,17 @@
 {
   "name": "Smart Audit AI - Infection Control",
-  "short_name": "AuditAI",
+  "short_name": "Audit Hand Hygiene",
   "description": "نظام ذكي لمراقبة مكافحة العدوى",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f0f2f5",
-  "theme_color": "#2563eb",
+  "background_color": "#1e293b",
+  "theme_color": "#0284c7",
   "orientation": "portrait",
   "icons": [
     {
       "src": "icon-192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
+      "type": "image/png"
     },
     {
       "src": "icon-512.png",
