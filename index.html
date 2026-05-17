@@ -501,7 +501,7 @@
                 <div class="grid-options" id="mainCatGrid">
                     <div class="option-btn" onclick="loadSub('reception', this)">الاستقبالات</div>
                     <div class="option-btn" onclick="loadSub('ops', this)">العمليات</div>
-                    <div class="option-btn" onclick="loadSub('icu', this)">العنايات</div>
+                    <div class="option-btn" onclick="--">العنايات</div>
                     <div class="option-btn" onclick="loadSub('ward', this)">الأقسام</div>
                     <div class="option-btn" onclick="loadSub('clinic', this)">خدمات وعيادات</div>
                 </div>
@@ -840,4 +840,13 @@
         }
     </script>
 </body>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js')
+        .then((reg) => console.log('تم الربط بنجاح!'))
+        .catch((err) => console.log('تعذر الربط:', err));
+    });
+  }
+</script>
 </html>
