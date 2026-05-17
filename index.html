@@ -357,24 +357,96 @@
         <div class="app-header">
             <div class="header-title">
                 <span style="font-size: 2.2rem;"></span>
-               <div style="display: flex; flex-direction: column; gap: 4px; text-align: right;">
-    <!-- العنوان الرئيسي -->
-    <h1 style="margin: 0; font-size: 1.6rem; color: var(--accent); font-weight: 800; letter-spacing: -0.5px; line-height: 1.2;">
-        وحدة مكافحة العدوى
-    </h1>
-    
-    <!-- السطر الثاني (التابع للمستشفى) -->
-    <p style="margin: 0; font-weight: 700; color: var(--text-light); font-size: 0.9rem; line-height: 1.4;">
-        مستشفيات جامعة سوهاج
-    </p>
-    
-    <!-- السطر الثالث (اسم النظام مع شارة بسيطة تعبر عن التكنولوجيا الرقمية) -->
-    <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
-        <span style="font-size: 0.5rem; color: var(--accent); opacity: 0.7;"></span>
-        <p style="margin: 0; font-weight: 600; color: var(--text-light); font-size: 0.8rem; opacity: 0.85;">
-            نظام التدقيق الرقمي لغسيل الأيدي
-        </p>
+             <div style="
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: right;
+    position: relative;
+">
+
+    <!-- الشعار والعنوان -->
+    <div style="display:flex; align-items:center; gap:12px;">
+        
+        <!-- أيقونة -->
+        <div style="
+            width:58px;
+            height:58px;
+            border-radius:18px;
+            background: linear-gradient(135deg, #0284c7, #38bdf8);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            box-shadow: 0 8px 20px rgba(2,132,199,0.25);
+            font-size:1.6rem;
+            color:white;
+        ">
+            🫧
+        </div>
+
+        <!-- النص -->
+        <div>
+            <h1 style="
+                margin:0;
+                font-size:1.65rem;
+                font-weight:900;
+                color: var(--accent);
+                line-height:1.2;
+                letter-spacing:-0.5px;
+            ">
+                Infection Control Unit
+            </h1>
+
+            <p style="
+                margin:2px 0 0 0;
+                font-size:0.92rem;
+                font-weight:700;
+                color: var(--text-light);
+                letter-spacing:0.3px;
+            ">
+                Sohag University Hospitals
+            </p>
+        </div>
     </div>
+
+    <!-- الخط الفاصل -->
+    <div style="
+        width:100%;
+        height:1px;
+        background: linear-gradient(to left, transparent, rgba(2,132,199,0.35), transparent);
+        margin:6px 0;
+    "></div>
+
+    <!-- اسم النظام -->
+    <div style="
+        display:flex;
+        align-items:center;
+        gap:8px;
+        background: rgba(2,132,199,0.06);
+        border: 1px solid rgba(2,132,199,0.12);
+        padding:10px 16px;
+        border-radius:16px;
+        width: fit-content;
+        backdrop-filter: blur(8px);
+    ">
+        <span style="
+            width:10px;
+            height:10px;
+            border-radius:50%;
+            background:#10b981;
+            box-shadow:0 0 10px rgba(16,185,129,0.6);
+        "></span>
+
+        <span style="
+            font-size:0.88rem;
+            font-weight:800;
+            color: var(--accent);
+            letter-spacing:0.4px;
+        ">
+            Smart Hand Hygiene Audit System
+        </span>
+    </div>
+
 </div>
             </div>
         </div>
