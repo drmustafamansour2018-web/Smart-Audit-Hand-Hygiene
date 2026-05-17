@@ -650,7 +650,7 @@
             db.push({...draft});
             localStorage.setItem('ic_pro_db', JSON.stringify(db));
             showToast('✅ تم الحفظ بنجاح بنظام التخزين المحلي');
-            
+           // إعادة تعيين الحقول الافتراضية
             document.getElementById('staffNameInput').value = '';
             document.getElementById('momentInput').value = '';
             document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
@@ -658,19 +658,23 @@
             document.getElementById('clinicInputArea').style.display = 'none';
             document.getElementById('customClinicName').value = '';
             
+            // إعادة بناء كائن المسودة الافتراضي
             draft = { dept: '', staff: '', comp: null, moment: '', hospital: '', auditor: '', staffName: '', date: '' };
             const dateInput = document.getElementById('observationDate');
             if(dateInput) dateInput.valueAsDate = new Date();
             refreshStats();
         }
 
+        // بناء وتحديث جدول السجلات المحلية
         function renderRecordsTable() {
             const body = document.getElementById('recordsTableBody');
             if (!body) return;
+            
             if (db.length === 0) {
                 body.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-light); padding: 30px;">لا يوجد سجلات مدخلة محلياً حالياً، سيتم عرض البيانات هنا بمجرد الحفظ.</td></tr>`;
                 return;
             }
+            
             body.innerHTML = '';
             for (let i = db.length - 1; i >= 0; i--) {
                 const rec = db[i];
@@ -688,6 +692,7 @@
             }
         }
 
+        // مسح السجلات المحلية المؤقتة
         function clearLocalRecords() {
             if (confirm("هل أنت متأكد من رغبتك في حذف السجلات المحلية المؤقتة؟")) {
                 db = [];
@@ -698,6 +703,7 @@
             }
         }
 
+        // تحديث وإعادة حساب الإحصائيات الشاملة
         function refreshStats() {
             const months = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
             const currentYear = currentViewDate.getFullYear();
@@ -706,10 +712,11 @@
             document.getElementById('currentMonthLabel').innerText = `${months[currentMonthIdx]} ${currentYear}`;
             const nextBtn = document.getElementById('nextMonthBtn');
             
+            // تحديد الحد الأقصى للمشاهدة (مايو 2026)
             const isMaxMonth = currentMonthIdx === 4 && currentYear === 2026;
             if (isMaxMonth) nextBtn.classList.add('hidden'); else nextBtn.classList.remove('hidden');
 
-            // 1. حساب الإحصائيات المدخلة محلياً للشهر والسنة المحددة حالياً في الفلتر
+            // 1. حساب الإحصائيات المدخلة محلياً للشهر والسنة المحددة حالياً
             let localTotal = 0;
             let localCompliant = 0;
             db.forEach(rec => {
@@ -722,7 +729,7 @@
                 }
             });
 
-            // البيانات التأسيسية المسبقة المعتمدة بالنظام
+            // البيانات التأسيسية المسبقة المعتمدة بالنظام لمستشفيات جامعة سوهاج
             const staticConfig = {
                 2025: {
                     10: { total: 200, rate: 55, status: "يحتاج تحسين", worstDept: "الاستقبال والطوارئ", worstMoment: "بعد ملامسة بيئة المريض" }, 
@@ -787,15 +794,17 @@
             statusLabel.innerText = statusText;
             statusLabel.style.color = statusColor;
 
-            // حساب الإجمالي التراكمي لجميع الأوقات
+            // حساب الإجمالي التراكمي التاريخي لجميع الأوقات
             document.getElementById('overallTotalCount').innerText = 2024 + db.length;
             document.getElementById('overallTotalRate').innerText = `60%`;
             document.getElementById('progressBar').style.width = `${Math.min((finalTotal / 500) * 100, 100)}%`;
 
+            // إعادة رسم اللوحات البيانية بناءً على الحسابات الجديدة
             drawCharts(currentMonthIdx, finalTotal, currentYear);
         }
 
         let c1, c2, c3;
+        // إنشاء وتحديث الرسوم البيانية عبر Chart.js
         function drawCharts(currentMonthIdx, totalRecords, currentYear) {
             if(c1) c1.destroy(); if(c2) c2.destroy(); if(c3) c3.destroy();
             const chartTextColor = '#1e293b';
@@ -825,6 +834,7 @@
                 deptRates = uniqueDepts.map(() => 0);
             }
 
+            // الرسم البياني 1: معدل الالتزام بالأقسام
             const ctx1 = document.getElementById('deptChart').getContext('2d');
             c1 = new Chart(ctx1, {
                 type: 'bar',
@@ -856,7 +866,7 @@
                 }
             });
 
-            // حساب التوزيع الحي للفئات من البيانات المدخلة محلياً للشهر الحالي
+            // حساب التوزيع الحي للفئات الوظيفية من البيانات المدخلة محلياً للشهر الحالي
             let localStaffCounts = { 'تمريض': 0, 'طبيب': 0, 'عامل': 0, 'فني': 0 };
             db.forEach(rec => {
                 if (rec.date) {
@@ -896,6 +906,7 @@
 
             let totalMonthSum = rawStaffValues.reduce((a, b) => a + b, 0);
 
+            // الرسم البياني 2: توزيع الفئات المستهدفة (Doughnut)
             const ctx2 = document.getElementById('staffChart').getContext('2d');
             c2 = new Chart(ctx2, {
                 type: 'doughnut',
@@ -952,6 +963,7 @@
                 }
             }
 
+            // الرسم البياني 3: الالتزام حسب اللحظات الخمس لنظافة الأيدي (WHO)
             const ctx3 = document.getElementById('momentChart').getContext('2d');
             c3 = new Chart(ctx3, {
                 type: 'bar',
@@ -983,6 +995,8 @@
         }
     </script>
 </body>
+
+<!-- تهيئة وتثبيت Service Worker لخدمات الـ PWA دون اتصال بالإنترنت -->
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
