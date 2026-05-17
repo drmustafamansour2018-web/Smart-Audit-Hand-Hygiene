@@ -4,178 +4,175 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sohag University - Hand Hygiene Audit</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <style>
         :root {
-            --bg: #f0f7ff; 
-            --sidebar: #ffffff;
+            --bg: #f3f8fc; 
+            --sidebar: rgba(255, 255, 255, 0.85);
             --accent: #0284c7; 
-            --accent-light: rgba(2, 132, 199, 0.06);
+            --accent-gradient: linear-gradient(135deg, #0284c7, #0ea5e9);
+            --accent-light: rgba(2, 132, 199, 0.08);
             --success: #10b981;
+            --success-gradient: linear-gradient(135deg, #10b981, #34d399);
             --danger: #ef4444;
+            --danger-gradient: linear-gradient(135deg, #ef4444, #f87171);
             --warning: #f59e0b;
-            --card: #ffffff;
+            --warning-gradient: linear-gradient(135deg, #f59e0b, #fbbf24);
+            --card: rgba(255, 255, 255, 0.9);
             --text: #0f172a;
             --text-light: #64748b;
-            --border: #e2e8f0;
-            --shadow: rgba(2, 132, 199, 0.08);
-            --foam-color: rgba(255, 255, 255, 0.8);
-            --header-bg: linear-gradient(135deg, #ffffff, #f8fafc);
+            --border: rgba(226, 232, 240, 0.8);
+            --shadow: rgba(2, 132, 199, 0.05);
+            --glass-blur: blur(12px);
+            --foam-color: rgba(2, 132, 199, 0.03);
+            --header-bg: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(248,250,252,0.9));
         }
 
         html.dark-mode {
-            --bg: #0b1329; 
-            --sidebar: #111b35;
+            --bg: #070d19; 
+            --sidebar: rgba(17, 27, 53, 0.85);
             --accent: #38bdf8;
-            --accent-light: rgba(56, 189, 248, 0.07);
-            --card: #111b35;
+            --accent-gradient: linear-gradient(135deg, #0284c7, #38bdf8);
+            --accent-light: rgba(56, 189, 248, 0.08);
+            --card: rgba(17, 27, 53, 0.9);
             --text: #f8fafc;
             --text-light: #94a3b8;
-            --border: #1e293b;
-            --shadow: rgba(0, 0, 0, 0.3);
-            --foam-color: rgba(56, 189, 248, 0.05);
-            --header-bg: linear-gradient(135deg, #111b35, #162244);
+            --border: rgba(30, 41, 59, 0.7);
+            --shadow: rgba(0, 0, 0, 0.25);
+            --glass-blur: blur(16px);
+            --foam-color: rgba(56, 189, 248, 0.03);
+            --header-bg: linear-gradient(135deg, rgba(17, 27, 53, 0.9), rgba(22, 34, 68, 0.9));
         }
 
         body {
-            font-family: 'Cairo', 'Segoe UI', sans-serif;
+            font-family: 'Cairo', sans-serif;
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
             display: flex;
             height: 100vh;
             overflow: hidden;
-            transition: background-color 0.3s, color 0.3s;
+            transition: background-color 0.4s ease, color 0.4s ease;
             position: relative;
         }
 
-        body::before {
-            content: "🫧";
+        /* فقاعات خلفية جمالية مريحة للعين */
+        body::before, body::after {
+            content: "";
             position: fixed;
-            top: 20%; left: 5%;
-            font-size: 8rem;
-            opacity: 0.06;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--accent-light) 0%, transparent 70%);
             pointer-events: none;
-            animation: floatFoam 8s infinite ease-in-out;
+            z-index: 1;
         }
-        body::after {
-            content: "🫧";
-            position: fixed;
-            bottom: 15%; right: 20%;
-            font-size: 6rem;
-            opacity: 0.05;
-            pointer-events: none;
-            animation: floatFoam 12s infinite ease-in-out reverse;
-        }
+        body::before { width: 400px; height: 400px; top: -100px; left: -100px; opacity: 0.5; }
+        body::after { width: 500px; height: 500px; bottom: -150px; right: -100px; opacity: 0.4; }
 
-        @keyframes floatFoam {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-20px) scale(1.05); }
-        }
-
+        /* توب إشعار فخم */
         #toast {
             position: fixed;
-            top: 20px;
+            top: 25px;
             left: 50%;
             transform: translateX(-50%) translateY(-150px);
-            background: var(--success);
+            background: var(--success-gradient);
             color: white;
-            padding: 15px 40px;
-            border-radius: 30px; 
-            font-weight: 800;
-            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+            padding: 14px 35px;
+            border-radius: 50px; 
+            font-weight: 700;
+            box-shadow: 0 15px 30px rgba(16, 185, 129, 0.3);
             z-index: 9999;
             opacity: 0;
-            pointer-events: none;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: var(--glass-blur);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         #toast.show { 
             transform: translateX(-50%) translateY(0); 
             opacity: 1;
         }
 
+        /* السايد بار الفخم الجديد زجاجي بالكامل */
         .sidebar {
-            width: 260px;
+            width: 280px;
             background: var(--sidebar);
+            backdrop-filter: var(--glass-blur);
             border-left: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            padding: 30px 20px;
             flex-shrink: 0;
-            transition: background-color 0.3s, border-color 0.3s;
+            transition: all 0.4s ease;
             z-index: 10;
         }
 
         .main-content {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
+            padding: 30px;
             position: relative;
             z-index: 5;
+            scroll-behavior: smooth;
         }
 
-        /* تصميم الهيدر الرئيسي الفخم */
+        /* الهيدر الفخم المطور الزجاجي النيومورفي */
         .app-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            padding: 15px 25px;
+            margin-bottom: 30px;
+            padding: 18px 30px;
             background: var(--header-bg);
+            backdrop-filter: var(--glass-blur);
             border: 1px solid var(--border);
             border-radius: 24px;
-            box-shadow: 0 4px 20px var(--shadow);
-            position: relative;
+            box-shadow: 0 10px 30px var(--shadow);
         }
 
         .header-title {
             display: flex;
             align-items: center;
-            gap: 18px;
+            gap: 20px;
         }
 
-        /* لوجو رمزي دائري يعطي طابع المستشفيات الذكية */
         .header-logo-badge {
-            width: 55px;
-            height: 55px;
-            background: var(--accent-light);
-            border: 2px dashed var(--accent);
-            border-radius: 18px;
+            width: 60px;
+            height: 60px;
+            background: var(--accent-gradient);
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
-            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.1);
-            animation: pulseGlow 3s infinite ease-in-out;
+            font-size: 2rem;
+            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.25);
+            animation: pulseGlow 4s infinite ease-in-out;
         }
 
         @keyframes pulseGlow {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.03); opacity: 0.9; }
+            0%, 100% { transform: scale(1); box-shadow: 0 8px 20px rgba(2, 132, 199, 0.25); }
+            50% { transform: scale(1.04); box-shadow: 0 12px 25px rgba(2, 132, 199, 0.4); }
         }
 
         .header-text-group h1 {
             margin: 0;
-            font-size: 1.45rem;
-            font-weight: 800;
+            font-size: 1.6rem;
+            font-weight: 900;
             color: var(--text);
-            letter-spacing: -0.5px;
             line-height: 1.2;
         }
 
         .header-text-group h1 span {
-            color: var(--accent);
-            position: relative;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .header-sub-tag {
-            margin: 5px 0 0 0;
+            margin-top: 6px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.88rem;
+            gap: 10px;
+            font-size: 0.9rem;
             font-weight: 700;
             color: var(--text-light);
         }
@@ -185,50 +182,51 @@
             height: 6px;
             background-color: var(--accent);
             border-radius: 50%;
-            display: inline-block;
-            opacity: 0.7;
+            opacity: 0.5;
         }
 
         .header-sub-tag .tag-highlight {
-            background: var(--accent-light);
-            color: var(--accent);
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 0.8rem;
+            background: var(--accent-gradient);
+            color: white;
+            padding: 3px 12px;
+            border-radius: 30px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.15);
         }
 
-        /* تصميم مفتاح التبديل الأفقي المحدث */
+        /* تصميم مفتاح التبديل الأفقي فائق الأناقة */
         .theme-switch-wrapper {
             display: flex;
             flex-direction: row; 
             align-items: center;
-            gap: 10px;
-            padding: 8px 15px;
-            background: rgba(2, 132, 199, 0.08);
+            gap: 12px;
+            padding: 8px 16px;
+            background: rgba(2, 132, 199, 0.06);
+            border: 1px solid var(--border);
             border-radius: 30px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
             width: fit-content;
+            transition: all 0.3s ease;
         }
         html.dark-mode .theme-switch-wrapper {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.03);
         }
 
         .sidebar .theme-switch-wrapper {
-            margin: 0 auto 25px auto;
+            margin: 0 auto 30px auto;
         }
 
         .theme-switch-label {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--text-light);
-            margin: 0;
+            font-size: 0.95rem;
+            user-select: none;
         }
 
         .switch {
             position: relative;
             display: inline-block;
-            width: 50px;
-            height: 26px; 
+            width: 54px;
+            height: 28px; 
         }
 
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -238,224 +236,219 @@
             cursor: pointer;
             top: 0; left: 0; right: 0; bottom: 0;
             background-color: #cbd5e1;
-            transition: .3s;
+            transition: .4s cubic-bezier(0.4, 0, 0.2, 1);
             border-radius: 34px;
         }
 
         .slider:before {
             position: absolute;
             content: "🧼"; 
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 20px;
-            width: 20px;
+            height: 22px;
+            width: 22px;
             left: 3px;
             bottom: 3px; 
             background-color: white;
-            transition: .3s;
+            transition: .4s cubic-bezier(0.4, 0, 0.2, 1);
             border-radius: 50%;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
         }
 
-        input:checked + .slider { background-color: var(--accent); }
-        input:checked + .slider:before { transform: translateX(-24px); content: "🫧"; }
+        input:checked + .slider { background: var(--accent-gradient); }
+        input:checked + .slider:before { transform: translateX(-26px); content: "🫧"; }
 
+        /* بار التقدم الرغوي الذكي */
         .foam-progress-container {
-            height: 14px;
+            height: 12px;
             background: var(--border);
             border-radius: 20px;
-            margin-top: 12px;
+            margin-top: 15px;
             overflow: hidden;
             position: relative;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .foam-progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, #38bdf8, #0284c7);
+            background: var(--accent-gradient);
             width: 0%;
             border-radius: 20px;
-            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
         }
 
-        .foam-progress-bar::after {
-            content: "🫧🫧🫧🫧";
-            position: absolute;
-            right: 0; top: -2px;
-            font-size: 0.6rem;
-            letter-spacing: 2px;
-            color: rgba(255,255,255,0.7);
-            animation: bubbleMove 1s infinite linear;
+        /* عناصر التنقل في السايدبار المحدثة */
+        .nav-item {
+            padding: 14px 20px; 
+            border-radius: 16px; 
+            cursor: pointer;
+            margin-bottom: 8px; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            font-weight: 700; 
+            color: var(--text-light);
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+        }
+        .nav-item:hover {
+            background: var(--accent-light);
+            color: var(--accent);
+            transform: translateX(-5px);
+        }
+        .nav-item.active { 
+            background: var(--accent-gradient); 
+            color: white; 
+            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.2); 
         }
 
-        @keyframes bubbleMove {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-10px); }
-        }
-
-        @media (max-width: 768px) {
-            body { flex-direction: column; }
-            .sidebar {
-                width: 100%; height: 65px; flex-direction: row; padding: 5px 10px;
-                border-left: none; border-top: 2px solid var(--border);
-                position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000;
-                justify-content: space-around; align-items: center; box-shadow: 0 -4px 15px rgba(0,0,0,0.08);
-                box-sizing: border-box;
-                background: var(--sidebar);
-            }
-            .sidebar h2, .sidebar div:last-child, .sidebar .theme-switch-wrapper { display: none !important; }
-            .nav-item { margin-bottom: 0 !important; flex: 1; text-align: center; padding: 10px 5px !important; font-radius: 20px; font-size: 0.9rem; }
-            .main-content { padding: 15px 15px 90px 15px; }
-            .app-header { padding: 12px 15px; }
-            .header-logo-badge { width: 45px; height: 45px; font-size: 1.4rem; border-radius: 12px; }
-            .header-text-group h1 { font-size: 1.1rem; }
-            .header-sub-tag { font-size: 0.75rem; }
-            .app-header .theme-switch-wrapper { display: flex !important; padding: 4px 10px; border-radius: 20px; margin: 0; gap: 6px; }
-            .app-header .switch { width: 42px; height: 22px; }
-            .app-header .slider:before { top: 2px; left: 2px; width: 18px; height: 18px; font-size: 0.75rem; }
-            .app-header input:checked + .slider:before { transform: translateX(-20px); }
-        }
-
+        /* كروت الإحصائيات الفخمة (Glass Cards) */
         .month-filter {
             display: flex;
             align-items: center;
             justify-content: space-between;
             background: var(--card);
-            padding: 10px 20px;
-            border-radius: 20px;
-            margin-bottom: 20px;
+            backdrop-filter: var(--glass-blur);
+            padding: 12px 25px;
+            border-radius: 24px;
+            margin-bottom: 25px;
             border: 1px solid var(--border);
-            box-shadow: 0 4px 6px var(--shadow);
+            box-shadow: 0 8px 20px var(--shadow);
         }
 
         .month-btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 8px 18px;
-            border-radius: 15px;
+            background: var(--card);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 10px 22px;
+            border-radius: 16px;
             cursor: pointer;
             font-family: 'Cairo', sans-serif;
             font-weight: 700;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px var(--shadow);
         }
-        .month-btn:hover { opacity: 0.9; transform: scale(1.02); }
+        .month-btn:hover { background: var(--accent-gradient); color: white; border-color: transparent; transform: translateY(-2px); }
         .month-btn.hidden { visibility: hidden; pointer-events: none; }
 
-        #currentMonthLabel { font-weight: 800; color: var(--accent); font-size: 1.1rem; min-width: 120px; text-align: center; }
+        #currentMonthLabel { font-weight: 900; color: var(--accent); font-size: 1.2rem; min-width: 140px; text-align: center; }
 
         .insights-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
         }
 
         .insight-card {
-            padding: 18px;
-            border-radius: 24px; 
+            padding: 22px;
+            border-radius: 28px; 
             color: white;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.06);
             position: relative;
             overflow: hidden;
+            transition: transform 0.3s ease;
         }
+        .insight-card:hover { transform: translateY(-5px); }
 
-        .insight-card::after {
-            content: "🧼"; position: absolute; left: -10px; bottom: -10px; font-size: 3.5rem; opacity: 0.15;
-        }
+        .insight-blue { background: var(--accent-gradient); }
+        .insight-red { background: var(--danger-gradient); }
+        .insight-orange { background: var(--warning-gradient); }
+        .insight-green { background: var(--success-gradient); }
 
-        .insight-blue { background: linear-gradient(135deg, #0284c7, #38bdf8); }
-        .insight-red { background: linear-gradient(135deg, #e11d48, #fb7185); }
-        .insight-orange { background: linear-gradient(135deg, #ea580c, #ff9d43); }
-        .insight-green { background: linear-gradient(135deg, #059669, #34d399); }
-
-        .insight-card h5 { margin: 0; font-size: 0.85rem; opacity: 0.9; font-weight: 700; letter-spacing: 0.5px; }
-        .insight-card .insight-val { font-size: 1.15rem; font-weight: 800; margin-top: 6px; line-height: 1.3; }
+        .insight-card h5 { margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 700; letter-spacing: 0.3px; }
+        .insight-card .insight-val { font-size: 1.3rem; font-weight: 800; margin-top: 8px; line-height: 1.3; }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
         }
 
         .kpi-card {
             background: var(--card);
-            padding: 20px;
-            border-radius: 24px;
-            box-shadow: 0 6px 12px var(--shadow);
+            backdrop-filter: var(--glass-blur);
+            padding: 24px;
+            border-radius: 28px;
+            box-shadow: 0 10px 25px var(--shadow);
             border: 1px solid var(--border);
-            transition: background-color 0.3s, border-color 0.3s;
-            position: relative;
+            transition: all 0.3s ease;
         }
+        .kpi-card h4 { margin: 0 0 12px 0; color: var(--text-light); font-size: 0.95rem; font-weight: 700; }
+        .kpi-card .val { font-size: 2.1rem; font-weight: 900; color: var(--text); }
 
-        .kpi-card h4 { margin: 0 0 10px 0; color: var(--text-light); font-size: 0.9rem; font-weight: 700; }
-        .kpi-card .val { font-size: 1.8rem; font-weight: 800; color: var(--text); }
-
+        /* كرت الفورم الجذاب جداً */
         .form-container {
-            max-width: 600px; background: var(--card); padding: 30px; border-radius: 28px;
-            box-shadow: 0 15px 35px var(--shadow); margin: 0 auto;
+            max-width: 650px; 
+            background: var(--card); 
+            backdrop-filter: var(--glass-blur);
+            padding: 35px; 
+            border-radius: 32px;
+            box-shadow: 0 20px 50px var(--shadow); 
+            margin: 0 auto;
             border: 1px solid var(--border);
         }
 
         .grid-options {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-bottom: 20px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(125px, 1fr)); gap: 12px; margin-bottom: 20px;
         }
 
         .option-btn {
-            padding: 14px 10px; border: 1.5px solid var(--border); border-radius: 16px;
-            background: var(--card); color: var(--text); cursor: pointer; transition: all 0.2s ease;
-            text-align: center; font-size: 0.9rem; font-weight: 600;
+            padding: 15px 12px; border: 1.5px solid var(--border); border-radius: 18px;
+            background: var(--card); color: var(--text); cursor: pointer; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center; font-size: 0.95rem; font-weight: 700;
         }
+        .option-btn:hover { border-color: var(--accent); background: var(--accent-light); }
 
         .option-btn.active { 
-            background: var(--accent); color: white; border-color: var(--accent);
-            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2); transform: translateY(-2px);
+            background: var(--accent-gradient); color: white; border-color: transparent;
+            box-shadow: 0 6px 15px rgba(2, 132, 199, 0.25); transform: translateY(-2px);
         }
 
-        .btn-comp-success.active { background: var(--success) !important; border-color: var(--success) !important; color: white !important; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2) !important; }
-        .btn-comp-danger.active { background: var(--danger) !important; border-color: var(--danger) !important; color: white !important; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2) !important; }
+        .btn-comp-success.active { background: var(--success-gradient) !important; color: white !important; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.25) !important; }
+        .btn-comp-danger.active { background: var(--danger-gradient) !important; color: white !important; box-shadow: 0 6px 15px rgba(239, 68, 68, 0.25) !important; }
 
-        input[type="date"], select, .search-box {
-            width: 100%; padding: 12px; border-radius: 14px; border: 1.5px solid var(--border);
+        input[type="date"], select, .search-box, #staffNameInput, #customClinicName {
+            width: 100%; padding: 14px; border-radius: 16px; border: 1.5px solid var(--border);
             background: var(--card); color: var(--text); margin-bottom: 20px; font-family: 'Cairo', sans-serif;
-            font-weight: 600; box-sizing: border-box;
+            font-weight: 600; box-sizing: border-box; transition: all 0.3s ease;
         }
-
-        .clinic-input-group { display: none; gap: 10px; margin-bottom: 20px; animation: fadeIn 0.3s ease; }
-        .clinic-input-group input {
-            flex: 1; padding: 12px; border-radius: 12px; border: 1.5px solid var(--accent);
-            background: var(--bg); color: var(--text);
-        }
-        .confirm-btn {
-            background: var(--success); color: white; border: none; padding: 0 20px;
-            border-radius: 12px; cursor: pointer; font-weight: 800;
-        }
-
-        .nav-item {
-            padding: 12px 15px; border-radius: 16px; cursor: pointer;
-            margin-bottom: 6px; transition: 0.3s; font-weight: 700; color: var(--text-light);
-            display: flex; align-items: center; gap: 10px;
-        }
-        .nav-item.active { background: var(--accent); color: white; box-shadow: 0 4px 10px rgba(2, 132, 199, 0.15); }
+        input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-light); }
 
         .view { display: none; }
-        .view.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .view.active { display: block; animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
-        label { font-weight: 700; margin-bottom: 8px; display: block; font-size: 0.95rem; }
+        label { font-weight: 800; margin-bottom: 10px; display: block; font-size: 0.95rem; color: var(--text); }
         .eng-badge {
-            font-size: 0.7rem; background: rgba(2, 132, 199, 0.1); color: var(--accent);
-            padding: 4px 10px; border-radius: 20px; margin-right: 5px; text-transform: uppercase; font-weight: bold;
+            font-size: 0.75rem; background: var(--accent-light); color: var(--accent);
+            padding: 5px 14px; border-radius: 30px; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px;
+        }
+
+        /* متوافق بالكامل مع الجوالات بأعلى معايير الـ UI/UX */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar {
+                width: 100%; height: 75px; flex-direction: row; padding: 0 15px;
+                border-left: none; border-top: 1px solid var(--border);
+                position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000;
+                justify-content: space-around; align-items: center; box-shadow: 0 -10px 30px rgba(0,0,0,0.08);
+                box-sizing: border-box; background: var(--sidebar);
+            }
+            .sidebar h2, .sidebar div:last-child, .sidebar .theme-switch-wrapper { display: none !important; }
+            .nav-item { margin-bottom: 0 !important; flex: 1; text-align: center; padding: 12px 10px !important; border-radius: 14px; font-size: 0.95rem; justify-content: center; }
+            .nav-item:hover { transform: none; }
+            .main-content { padding: 20px 15px 100px 15px; }
+            .app-header { padding: 15px 20px; margin-bottom: 20px; }
+            .header-logo-badge { width: 50px; height: 50px; font-size: 1.6rem; border-radius: 16px; }
+            .header-text-group h1 { font-size: 1.25rem; }
+            .header-sub-tag { font-size: 0.8rem; }
+            .app-header .theme-switch-wrapper { display: flex !important; }
         }
     </style>
 </head>
@@ -463,8 +456,9 @@
 
     <div id="toast">تم التسجيل بنجاح 🧼</div>
 
+    <!-- السايد بار الفخم للأجهزة المكتبية -->
     <div class="sidebar">
-        <h2 style="color: var(--accent); font-size: 1.15rem; font-weight: 800; text-align: center; line-height: 1.4; margin-bottom:20px;">🧼 Smart Audit<br><span style="color:var(--text-light); font-size: 0.85rem; font-weight:600;">غسيل الأيدي ونظافتها</span></h2>
+        <h2 style="font-size: 1.3rem; font-weight: 900; text-align: center; line-height: 1.4; margin-bottom:30px; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🧼 Smart Audit<br><span style="color:var(--text-light); font-size: 0.9rem; font-weight:700;">نظافة الأيدي</span></h2>
         
         <div class="theme-switch-wrapper">
             <span class="theme-switch-label">☀️</span>
@@ -475,16 +469,16 @@
             <span class="theme-switch-label">🌙</span>
         </div>
 
-        <div class="nav-item active" onclick="switchView('dashboard', this)">📊 الإحصائيات</div>
-        <div class="nav-item" onclick="switchView('audit', this)">📝 تسجيل مشاهدة</div>
+        <div class="nav-item active" onclick="switchView('dashboard', this)">📊 الإحصائيات العصرية</div>
+        <div class="nav-item" onclick="switchView('audit', this)">📝 تسجيل مشاهدة ذكية</div>
         <div style="margin-top: auto; padding-top: 10px;">
-            <p style="font-size: 0.75rem; color: var(--text-light); text-align: center;">Hand Hygiene Monitoring System<br>🫧 مستشفيات جامعة سوهاج 🫧</p>
+            <p style="font-size: 0.8rem; color: var(--text-light); text-align: center; font-weight: 600;">Hand Hygiene System<br>🫧 مستشفيات جامعة سوهاج 🫧</p>
         </div>
     </div>
 
     <div class="main-content">
         
-        <!-- الهيدر الفخم والمحدث بالكامل -->
+        <!-- الهيدر الزجاجي الرئيسي -->
         <div class="app-header">
             <div class="header-title">
                 <div class="header-logo-badge">🧼</div>
@@ -508,6 +502,7 @@
             </div>
         </div>
 
+        <!-- شاشة الإحصائيات -->
         <div id="view-dashboard" class="view active">
             <div class="month-filter">
                 <button id="nextMonthBtn" class="month-btn" onclick="changeMonth(1)">الشهر التالي ◀</button>
@@ -533,36 +528,37 @@
                 <div class="kpi-card">
                     <h4>نسبة الالتزام الرئيسية</h4>
                     <div class="val" id="rateVal">0%</div>
-                    <span id="rateStatus" style="font-size: 0.85rem; font-weight: 800;">---</span>
+                    <span id="rateStatus" style="font-size: 0.9rem; font-weight: 800;">---</span>
                 </div>
                 <div class="kpi-card" style="border-right: 4px solid var(--accent); background: linear-gradient(to left, var(--card), var(--foam-color));">
                     <h4>نسبة الالتزام الكلية (تراكمي)</h4>
-                    <div class="val" id="overallTotalRate" style="color: var(--accent);">60%</div>
-                    <span style="font-size: 0.75rem; color: var(--text-light);">منذ بداية تجميع البيانات</span>
+                    <div class="val" id="overallTotalRate" style="color: var(--accent); background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">60%</div>
+                    <span style="font-size: 0.8rem; color: var(--text-light); font-weight: 600;">منذ بداية تجميع البيانات</span>
                 </div>
             </div>
 
-            <div class="charts-row" style="display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px;">
+            <div class="charts-row" style="display: grid; grid-template-columns: 1fr; gap: 25px; margin-bottom: 25px;">
                 <div class="kpi-card" style="width: 100%; box-sizing: border-box;">
                     <h4>نسبة الالتزام لكل قسم (%) 📊</h4>
-                    <div style="position: relative; width: 100%; height: 350px;">
+                    <div style="position: relative; width: 100%; height: 380px;">
                         <canvas id="deptChart"></canvas>
                     </div>
                 </div>
             </div>
-            <div class="charts-row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            <div class="charts-row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px;">
                 <div class="kpi-card"><h4>توزيع الفئات المشاركة (%) 👥</h4><canvas id="staffChart"></canvas></div>
             </div>
         </div>
 
+        <!-- شاشة تسجيل المشاهدة -->
         <div id="view-audit" class="view">
             <div class="form-container">
-                <div style="text-align: center; margin-bottom: 20px;">
+                <div style="text-align: center; margin-bottom: 25px;">
                     <span class="eng-badge">🧼 Hand Hygiene Form</span>
-                    <h3 style="margin: 5px 0; font-weight: 800;">تسجيل مشاهدة غسيل أيدي</h3>
+                    <h3 style="margin: 8px 0 0 0; font-weight: 900; font-size: 1.4rem;">تسجيل مشاهدة غسيل أيدي جديدة</h3>
                 </div>
                 
-                <label>المستشفى</label>
+                <label>المستشفى المستهدف</label>
                 <select id="hospitalInput">
                     <option value="">اختر المستشفى...</option>
                     <option>مستشفى سوهاج الجامعي</option>
@@ -585,7 +581,7 @@
                     <option>ايمان احمد علي</option>
                 </select>
 
-                <label style="color:var(--accent);">تصنيف المكان</label>
+                <label style="color:var(--accent);">تصنيف المكان الرئيسي</label>
                 <div class="grid-options" id="mainCatGrid">
                     <div class="option-btn" onclick="loadSub('reception', this)">الاستقبالات</div>
                     <div class="option-btn" onclick="loadSub('ops', this)">العمليات</div>
@@ -597,18 +593,18 @@
                 <div id="subCategoryArea" style="display:none;">
                     <label style="color:var(--accent);">القسم بالتحديد</label>
                     <input type="text" id="deptSearch" class="search-box" placeholder="ابحث عن اسم القسم..." onkeyup="filterDepts()">
-                    <div id="subContainer" class="grid-options" style="padding: 10px; background: rgba(0,0,0,0.03); border-radius: 10px; max-height: 200px; overflow-y: auto;"></div>
+                    <div id="subContainer" class="grid-options" style="padding: 12px; background: rgba(0,0,0,0.02); border: 1px solid var(--border); border-radius: 18px; max-height: 220px; overflow-y: auto;"></div>
                 </div>
 
-                <div id="clinicInputArea" class="clinic-input-group">
-                    <input type="text" id="customClinicName" placeholder="أدخل اسم العيادة...">
-                    <button class="confirm-btn" onclick="confirmClinic()">تأكيد</button>
+                <div id="clinicInputArea" style="display: none; gap: 10px; margin-bottom: 20px; animation: fadeIn 0.3s ease;">
+                    <input type="text" id="customClinicName" placeholder="أدخل اسم العيادة الجديدة..." style="margin-bottom:0;">
+                    <button class="option-btn active" style="padding:0 25px; border-radius:16px;" onclick="confirmClinic()">تأكيد</button>
                 </div>
 
                 <div id="formFieldsArea">
                     <label style="color:var(--accent);">اللحظة التي تم مشاهدتها (5 Moments)</label>
                     <select id="momentInput" onchange="draft.moment = this.value">
-                        <option value="">اختر اللحظة...</option>
+                        <option value="">اختر اللحظة الطبية الكلي...</option>
                         <option value="1">1- قبل ملامسة المريض</option>
                         <option value="2">2- قبل الإجراءات النظيفة / المعقمة</option>
                         <option value="3">3- بعد ملامسة سوائل جسم المريض</option>
@@ -617,9 +613,9 @@
                     </select>
                     
                     <label style="color:var(--accent);">مؤدي الإجراء - اسم الموظف (اختياري)</label>
-                    <input type="text" id="staffNameInput" placeholder="اكتب الاسم إذا رغبت..." style="width: 100%; padding: 12px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--card); color: var(--text); margin-bottom: 20px; font-family: 'Cairo';">
+                    <input type="text" id="staffNameInput" placeholder="اكتب الاسم اختياري...">
 
-                    <label style="color:var(--accent); margin-top: 15px;">الفئة (Staff Class)</label>
+                    <label style="color:var(--accent); margin-top: 15px;">الفئة الوظيفية (Staff Class)</label>
                     <div class="grid-options" id="staffGroup">
                         <div class="option-btn" onclick="selectItem('staff', 'طبيب', this)">طبيب</div>
                         <div class="option-btn" onclick="selectItem('staff', 'تمريض', this)">تمريض</div>
@@ -627,21 +623,22 @@
                         <div class="option-btn" onclick="selectItem('staff', 'عامل', this)">عامل</div>
                     </div>
 
-                    <label style="color:var(--accent);">النتيجة (Compliance)</label>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;" id="compGroup">
-                        <div class="option-btn btn-comp-success" style="border-color: var(--success); color: var(--success);" onclick="selectItem('comp', 1, this)">🟢 ملتزم (Compliant)</div>
-                        <div class="option-btn btn-comp-danger" style="border-color: var(--danger); color: var(--danger);" onclick="selectItem('comp', 0, this)">🔴 غير ملتزم</div>
+                    <label style="color:var(--accent);">النتيجة والامتثال (Compliance)</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;" id="compGroup">
+                        <div class="option-btn" style="border-color: var(--success); color: var(--success); background: rgba(16, 185, 129, 0.04);" onclick="selectItem('comp', 1, this)">🟢 ملتزم (Compliant)</div>
+                        <div class="option-btn" style="border-color: var(--danger); color: var(--danger); background: rgba(239, 68, 68, 0.04);" onclick="selectItem('comp', 0, this)">🔴 غير ملتزم</div>
                     </div>
 
-                    <label style="margin-top: 15px;">تاريخ المشاهدة</label>
+                    <label style="margin-top: 20px;">تاريخ رصد المشاهدة</label>
                     <input type="date" id="observationDate">
 
-                    <button style="background:var(--accent); color:white; width:100%; padding:16px; border-radius:16px; border:none; margin-top:10px; font-weight:800; cursor:pointer; font-size:1rem; box-shadow: 0 6px 20px rgba(2, 132, 199, 0.3);" onclick="submitData()">حفظ وإرسال المشاهدة 🧼</button>
+                    <button style="background: var(--accent-gradient); color:white; width:100%; padding:18px; border-radius:20px; border:none; margin-top:15px; font-weight:800; cursor:pointer; font-size:1.1rem; box-shadow: 0 8px 25px rgba(2, 132, 199, 0.35); transition: all 0.3s ease;" onclick="submitData()">حفظ وإرسال المشاهدة الفورية 🧼</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- كود الجافا سكريبت بالكامل دون أي تعديل في المنطق الأساسي -->
     <script>
         Chart.register(ChartDataLabels);
         let db = [];
