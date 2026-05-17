@@ -334,121 +334,6 @@
             .main-content { padding: 15px 15px 95px 15px; }
             .form-container { padding: 20px; border-radius: 24px; }
         }
-        /* تنسيق الهيدر الجذاب والحديث */
-.sh-modern-header {
-    position: relative;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    border-radius: 20px;
-    padding: 35px 20px;
-    text-align: center;
-    max-width: 1200px;
-    margin: 25px auto;
-    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15), 
-                0 8px 16px -6px rgba(15, 23, 42, 0.1);
-    overflow: hidden;
-    direction: rtl;
-    font-family: 'Cairo', sans-serif;
-}
-
-/* حركة ضوئية خلفية ناعمة لزيادة الجاذبية */
-.sh-header-overlay {
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(2, 132, 199, 0.15) 0%, transparent 60%);
-    pointer-events: none;
-}
-
-.sh-header-content {
-    position: relative;
-    z-index: 2;
-}
-
-/* شارة النظام الذكي */
-.sh-badge-container {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    padding: 6px 16px;
-    border-radius: 50px;
-    margin-bottom: 15px;
-    backdrop-filter: blur(4px);
-}
-
-.sh-badge-text {
-    color: #94a3b8;
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-}
-
-/* 🟢 المؤشر الحي النابض باللون الأخضر */
-.sh-pulse-indicator {
-    width: 8px;
-    height: 8px;
-    background-color: #10b981;
-    border-radius: 50%;
-    display: inline-block;
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-    animation: shPulse 2s infinite;
-}
-
-/* العنوان الرئيسي */
-.sh-main-title {
-    color: #ffffff;
-    font-size: 2.2rem;
-    font-weight: 800;
-    margin: 0;
-    letter-spacing: -0.5px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-
-/* خط فاصل أنيق متدرج الألوان */
-.sh-divider-line {
-    height: 3px;
-    width: 80px;
-    background: linear-gradient(90deg, #0284c7, #10b981);
-    margin: 15px auto;
-    border-radius: 2px;
-}
-
-/* العنوان الفرعي */
-.sh-sub-title {
-    color: #38bdf8;
-    font-size: 1.15rem;
-    font-weight: 600;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.sh-icon {
-    font-size: 1.25rem;
-}
-
-/* تأثير حركة النبض */
-@keyframes shPulse {
-    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-}
-
-/* متوافق تمامًا مع الشاشات الصغيرة والهواتف */
-@media (max-width: 768px) {
-    .sh-modern-header {
-        margin: 15px 10px;
-        padding: 25px 15px;
-        border-radius: 14px;
-    }
-    .sh-main-title { font-size: 1.7rem; }
-    .sh-sub-title { font-size: 1rem; }
-}
     </style>
 </head>
 <body>
@@ -469,22 +354,15 @@
 
     <div class="main-content">
         
-        <!-- الهيدر المطور والمستقل للواجهة -->
-<header class="sh-modern-header">
-    <div class="sh-header-overlay"></div>
-    <div class="sh-header-content">
-        <div class="sh-badge-container">
-            <span class="sh-pulse-indicator"></span>
-            <span class="sh-badge-text">نظام التدقيق الرقمي الذكي</span>
+        <div class="app-header">
+            <div class="header-title">
+                <span style="font-size: 2.2rem;">🫧</span>
+                <div>
+                    <h1 style="margin:0; font-size: 1.5rem; color: var(--accent); font-weight: 900;">وحدة مكافحة العدوى</h1>
+                    <p style="margin:4px 0 0 0; font-weight: 700; color: var(--text-light); font-size:0.9rem;">مستشفيات جامعة سوهاج • نظام التدقيق الرقمي الذكي</p>
+                </div>
+            </div>
         </div>
-        <h1 class="sh-main-title">وحدة مكافحة العدوى</h1>
-        <div class="sh-divider-line"></div>
-        <p class="sh-sub-title">
-            <span class="sh-icon">🏥</span> 
-            مستشفيات جامعة سوهاج
-        </p>
-    </div>
-</header>
 
         <!-- VIEW: DASHBOARD -->
         <div id="view-dashboard" class="view active">
