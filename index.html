@@ -12,6 +12,7 @@
             --bg: #f0f7ff; 
             --sidebar: #ffffff;
             --accent: #0284c7; 
+            --accent-light: rgba(2, 132, 199, 0.06);
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
@@ -21,18 +22,21 @@
             --border: #e2e8f0;
             --shadow: rgba(2, 132, 199, 0.08);
             --foam-color: rgba(255, 255, 255, 0.8);
+            --header-bg: linear-gradient(135deg, #ffffff, #f8fafc);
         }
 
         html.dark-mode {
             --bg: #0b1329; 
             --sidebar: #111b35;
             --accent: #38bdf8;
+            --accent-light: rgba(56, 189, 248, 0.07);
             --card: #111b35;
             --text: #f8fafc;
             --text-light: #94a3b8;
             --border: #1e293b;
             --shadow: rgba(0, 0, 0, 0.3);
             --foam-color: rgba(56, 189, 248, 0.05);
+            --header-bg: linear-gradient(135deg, #111b35, #162244);
         }
 
         body {
@@ -112,37 +116,109 @@
             z-index: 5;
         }
 
+        /* تصميم الهيدر الرئيسي الفخم */
         .app-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 25px;
-            border-bottom: 2px dashed var(--border);
-            padding-bottom: 15px;
+            padding: 15px 25px;
+            background: var(--header-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            box-shadow: 0 4px 20px var(--shadow);
+            position: relative;
         }
 
         .header-title {
-            text-align: right;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 18px;
         }
 
-        .theme-switch-wrapper {
+        /* لوجو رمزي دائري يعطي طابع المستشفيات الذكية */
+        .header-logo-badge {
+            width: 55px;
+            height: 55px;
+            background: var(--accent-light);
+            border: 2px dashed var(--accent);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.1);
+            animation: pulseGlow 3s infinite ease-in-out;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.03); opacity: 0.9; }
+        }
+
+        .header-text-group h1 {
+            margin: 0;
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .header-text-group h1 span {
+            color: var(--accent);
+            position: relative;
+        }
+
+        .header-sub-tag {
+            margin: 5px 0 0 0;
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 6px 12px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        .header-sub-tag .bullet-sep {
+            width: 6px;
+            height: 6px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            display: inline-block;
+            opacity: 0.7;
+        }
+
+        .header-sub-tag .tag-highlight {
+            background: var(--accent-light);
+            color: var(--accent);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        /* تصميم مفتاح التبديل الأفقي المحدث */
+        .theme-switch-wrapper {
+            display: flex;
+            flex-direction: row; 
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
             background: rgba(2, 132, 199, 0.08);
-            border-radius: 20px;
+            border-radius: 30px;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            width: fit-content;
         }
         html.dark-mode .theme-switch-wrapper {
             background: rgba(255, 255, 255, 0.05);
         }
 
+        .sidebar .theme-switch-wrapper {
+            margin: 0 auto 25px auto;
+        }
+
         .theme-switch-label {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             font-weight: 700;
             color: var(--text-light);
             margin: 0;
@@ -151,8 +227,8 @@
         .switch {
             position: relative;
             display: inline-block;
-            width: 46px;
-            height: 24px;
+            width: 50px;
+            height: 26px; 
         }
 
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -169,14 +245,14 @@
         .slider:before {
             position: absolute;
             content: "🧼"; 
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 18px;
-            width: 18px;
+            height: 20px;
+            width: 20px;
             left: 3px;
-            bottom: 3px;
+            bottom: 3px; 
             background-color: white;
             transition: .3s;
             border-radius: 50%;
@@ -184,7 +260,7 @@
         }
 
         input:checked + .slider { background-color: var(--accent); }
-        input:checked + .slider:before { transform: translateX(22px); content: "🫧"; }
+        input:checked + .slider:before { transform: translateX(-24px); content: "🫧"; }
 
         .foam-progress-container {
             height: 14px;
@@ -233,7 +309,14 @@
             .sidebar h2, .sidebar div:last-child, .sidebar .theme-switch-wrapper { display: none !important; }
             .nav-item { margin-bottom: 0 !important; flex: 1; text-align: center; padding: 10px 5px !important; font-radius: 20px; font-size: 0.9rem; }
             .main-content { padding: 15px 15px 90px 15px; }
-            .app-header .theme-switch-wrapper { display: flex !important; }
+            .app-header { padding: 12px 15px; }
+            .header-logo-badge { width: 45px; height: 45px; font-size: 1.4rem; border-radius: 12px; }
+            .header-text-group h1 { font-size: 1.1rem; }
+            .header-sub-tag { font-size: 0.75rem; }
+            .app-header .theme-switch-wrapper { display: flex !important; padding: 4px 10px; border-radius: 20px; margin: 0; gap: 6px; }
+            .app-header .switch { width: 42px; height: 22px; }
+            .app-header .slider:before { top: 2px; left: 2px; width: 18px; height: 18px; font-size: 0.75rem; }
+            .app-header input:checked + .slider:before { transform: translateX(-20px); }
         }
 
         .month-filter {
@@ -383,13 +466,13 @@
     <div class="sidebar">
         <h2 style="color: var(--accent); font-size: 1.15rem; font-weight: 800; text-align: center; line-height: 1.4; margin-bottom:20px;">🧼 Smart Audit<br><span style="color:var(--text-light); font-size: 0.85rem; font-weight:600;">غسيل الأيدي ونظافتها</span></h2>
         
-        <div class="theme-switch-wrapper" style="margin-bottom: 25px;">
-            <span class="theme-switch-label">☀️ عادي</span>
+        <div class="theme-switch-wrapper">
+            <span class="theme-switch-label">☀️</span>
             <label class="switch">
                 <input type="checkbox" class="themeCheckbox" onchange="toggleTheme(this)">
                 <span class="slider"></span>
             </label>
-            <span class="theme-switch-label">🌙 داكن</span>
+            <span class="theme-switch-label">🌙</span>
         </div>
 
         <div class="nav-item active" onclick="switchView('dashboard', this)">📊 الإحصائيات</div>
@@ -401,12 +484,17 @@
 
     <div class="main-content">
         
+        <!-- الهيدر الفخم والمحدث بالكامل -->
         <div class="app-header">
             <div class="header-title">
-                <span style="font-size: 1.8rem;">🧼</span>
-                <div>
-                    <h1 style="margin:0; font-size: 1.4rem; color: var(--accent); font-weight: 800;">وحدة مكافحة العدوى</h1>
-                    <p style="margin:3px 0 0 0; font-weight: 700; color: var(--text-light); font-size:0.85rem;">مستشفيات جامعة سوهاج • نظافة الأيدي</p>
+                <div class="header-logo-badge">🧼</div>
+                <div class="header-text-group">
+                    <h1><span>وحدة مكافحة العدوى</span></h1>
+                    <div class="header-sub-tag">
+                        <span>مستشفيات جامعة سوهاج</span>
+                        <span class="bullet-sep"></span>
+                        <span class="tag-highlight">نظافة الأيدي</span>
+                    </div>
                 </div>
             </div>
             
@@ -443,7 +531,7 @@
                     </div>
                 </div>
                 <div class="kpi-card">
-                    <h4>نسبة الالتزام الشهرية</h4>
+                    <h4>نسبة الالتزام الرئيسية</h4>
                     <div class="val" id="rateVal">0%</div>
                     <span id="rateStatus" style="font-size: 0.85rem; font-weight: 800;">---</span>
                 </div>
@@ -501,7 +589,7 @@
                 <div class="grid-options" id="mainCatGrid">
                     <div class="option-btn" onclick="loadSub('reception', this)">الاستقبالات</div>
                     <div class="option-btn" onclick="loadSub('ops', this)">العمليات</div>
-                    <div class="option-btn" onclick="--">العنايات</div>
+                    <div class="option-btn" onclick="loadSub('icu', this)">العنايات</div>
                     <div class="option-btn" onclick="loadSub('ward', this)">الأقسام</div>
                     <div class="option-btn" onclick="loadSub('clinic', this)">خدمات وعيادات</div>
                 </div>
