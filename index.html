@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" class="dark-mode">
 <head>
-    <link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sohag University - Hand Hygiene Audit</title>
@@ -502,7 +501,7 @@
                 <div class="grid-options" id="mainCatGrid">
                     <div class="option-btn" onclick="loadSub('reception', this)">الاستقبالات</div>
                     <div class="option-btn" onclick="loadSub('ops', this)">العمليات</div>
-                    <div class="option-btn" onclick="--">العنايات</div>
+                    <div class="option-btn" onclick="loadSub('icu', this)">العنايات</div>
                     <div class="option-btn" onclick="loadSub('ward', this)">الأقسام</div>
                     <div class="option-btn" onclick="loadSub('clinic', this)">خدمات وعيادات</div>
                 </div>
@@ -554,15 +553,8 @@
             </div>
         </div>
     </div>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./service-worker.js')
-        .then((reg) => console.log('Service Worker Registered!', reg))
-        .catch((err) => console.log('Service Worker Reg Failed:', err));
-    });
-  }
-</script>
+
+    <script>
         Chart.register(ChartDataLabels);
         let db = [];
         let draft = { dept: '', staff: '', comp: null, moment: '', hospital: '', auditor: '', staffName: '', date: '' };
