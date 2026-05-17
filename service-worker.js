@@ -1,16 +1,15 @@
-const CACHE_NAME = 'audit-hh-v1';
+const CACHE_NAME = 'audit-hh-v2';
 const ASSETS = [
-  './',
   './index.html',
   './manifest.json',
-  './icon-512.png' // تأكد إن اسم صورة الأيقونة الزرقاء عندك كدة بالظبط
+  './icon-512.png'
 ];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS);
-    })
+    }).then(() => self.skipWaiting()) // بيجبر المتصفح يشغل النسخة الجديدة فوراً
   );
 });
 
@@ -24,7 +23,7 @@ self.addEventListener('activate', (e) => {
           }
         })
       );
-    })
+    }).then(() => self.clients.claim())
   );
 });
 
